@@ -103,11 +103,8 @@ public class CommonServiceImpl implements CommonService {
         Common common = commonRepository.findById(id).orElse(null);
         if (common != null) {
             common.setIsDeleted( 1L );
-            commonRepository.save( common );
-            return 1L;
-        } else {
-            return 0L;
         }
+        return commonRepository.save(common) == null ? 0L : 1L;
     }
 
     private MyPage<CommonDto> getPageDto(Page<Common> componentPage){
