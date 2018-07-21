@@ -101,6 +101,7 @@ public class CommonServiceImpl implements CommonService {
     @Override
     public Long del(Long id) {
         Common common = commonRepository.findById(id).orElse(null);
+        common.setIsDeleted( 1L );
         return commonRepository.save(common) == null ? 0L : 1L;
     }
 

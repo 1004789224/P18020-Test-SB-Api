@@ -28,7 +28,6 @@ public class CommonController {
 
     @Autowired
     private CommonService commonService;
-    
     @AopLog
     @RequestMapping(value = "", method = RequestMethod.POST)
     public Result list(@RequestBody CommonQueryVo commonQueryVo,
