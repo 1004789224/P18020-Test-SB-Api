@@ -5,15 +5,12 @@ import com.alibaba.fastjson.JSON;
 import com.ly.Global;
 import com.ly.helper.ErrorCode;
 import com.ly.helper.Result;
-import com.ly.service.JwtCheckService;
+//import com.ly.service.JwtCheckService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -27,11 +24,11 @@ public class WebInterceptor implements HandlerInterceptor {
 
     private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
-    private RedisTemplate redisTemplate;
-
-    @Autowired
-    private JwtCheckService jwtCheckService;
+//    @Autowired
+//    private RedisTemplate redisTemplate;
+//
+//    @Autowired
+//    private JwtCheckService jwtCheckService;
 
     @Override
     public boolean preHandle(HttpServletRequest request,
@@ -42,7 +39,7 @@ public class WebInterceptor implements HandlerInterceptor {
             this.rtnResponse(response);
             return false;
         } else {
-            Long userId =  jwtCheckService.getUserId(token);
+            Long userId = 1L;// jwtCheckService.getUserId(token);
             if (userId > 0){
                 request.setAttribute(Global.USER_ID,userId);
             }else{
