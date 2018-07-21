@@ -3,8 +3,6 @@ package com.ly.vo.form;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import java.util.Date;
-
 /**
  * @author zw
  * @since 2017-11-11

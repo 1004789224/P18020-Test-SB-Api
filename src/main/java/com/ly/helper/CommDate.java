@@ -1,7 +1,5 @@
 package com.ly.helper;
 
-import org.springframework.beans.factory.annotation.Value;
-
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
