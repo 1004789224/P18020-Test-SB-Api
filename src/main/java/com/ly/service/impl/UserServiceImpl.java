@@ -72,6 +72,11 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
+    /**
+     * TODO 给密码加盐
+     * @param userVo
+     * @return
+     */
     @Override
     public Long saveUser(UserVo userVo) {
         User user = new User();
