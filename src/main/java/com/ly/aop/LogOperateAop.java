@@ -27,7 +27,7 @@ public class LogOperateAop {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Pointcut("execution(* com.ly.web..*(..)) || execution(* com.ly.student.web..*(..)) ")
+    @Pointcut("execution(* com.ly.web..*(..)) || execution(* com.ly.web..*(..)) ")
     public void webLog() {
     }
 

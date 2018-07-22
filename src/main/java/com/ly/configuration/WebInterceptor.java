@@ -36,7 +36,8 @@ public class WebInterceptor implements HandlerInterceptor {
             this.rtnResponse(response);
             return false;
         } else {
-            Long userId = 1L;// jwtCheckService.getUserId(token);
+            // jwtCheckService.getUserId(token);
+            Long userId = 1L;
             if (userId > 0){
                 request.setAttribute(Global.USER_ID,userId);
             }else{

@@ -49,7 +49,6 @@ public class CommonServiceImpl implements CommonService {
             where.and(QCommon.common.language.like(Expressions.asString("%").concat(commonQueryVo.getLanguage()).concat("%")));
         }
 
-
         if (StringUtils.hasText(commonQueryVo.getValue())) {
             where.and(QCommon.common.value.like(Expressions.asString("%").concat(commonQueryVo.getValue()).concat("%")));
         }
