@@ -5,20 +5,20 @@ package com.ly.model;
  * @since 2017-10-08
  */
 
-public class UserM {
+public class GroupM {
     public static final String ID = "id";
-    
-    public static final String PHONE = "phone";
-    
-    public static final String IDNUMBER = "idnumber";
     
     public static final String NAME = "name";
     
-    public static final String PASSWORD = "password";
+    public static final String PHONE = "phone";
     
-    public static final String SALT = "salt";
+    public static final String LINK_NAME = "linkName";
     
-    public static final String IMG_URL = "imgUrl";
+    public static final String ADDRESS = "address";
+    
+    public static final String LOGO_URL = "logoUrl";
+    
+    public static final String ORDERNUM = "ordernum";
     
     public static final String GMT_CREATE = "gmtCreate";
     
