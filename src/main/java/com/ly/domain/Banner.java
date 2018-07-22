@@ -15,28 +15,26 @@ import javax.persistence.Id;
  * @since 2017-10-08
  */
 
-@Entity(name = "user")
+@Entity(name = "banner")
 @DynamicUpdate
 @DynamicInsert
-public class User implements java.io.Serializable{
+public class Banner implements java.io.Serializable{
 
-    private static final long serialVersionUID = 18723482374628613L;
+    private static final long serialVersionUID = 18723482374628615L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String phone;
-
-    private String idnumber;
-
     private String name;
 
-    private String password;
-
-    private String salt;
+    private String gotoUrl;
 
     private String imgUrl;
+
+    private String description;
+
+    private Long ordernum;
 
     private Date gmtCreate;
 
@@ -52,22 +50,6 @@ public class User implements java.io.Serializable{
         this.id = id;
     }
 
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getIdnumber() {
-        return idnumber;
-    }
-
-    public void setIdnumber(String idnumber) {
-        this.idnumber = idnumber;
-    }
-
     public String getName() {
         return name;
     }
@@ -76,20 +58,12 @@ public class User implements java.io.Serializable{
         this.name = name;
     }
 
-    public String getPassword() {
-        return password;
+    public String getGotoUrl() {
+        return gotoUrl;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getSalt() {
-        return salt;
-    }
-
-    public void setSalt(String salt) {
-        this.salt = salt;
+    public void setGotoUrl(String gotoUrl) {
+        this.gotoUrl = gotoUrl;
     }
 
     public String getImgUrl() {
@@ -98,6 +72,22 @@ public class User implements java.io.Serializable{
 
     public void setImgUrl(String imgUrl) {
         this.imgUrl = imgUrl;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Long getOrdernum() {
+        return ordernum;
+    }
+
+    public void setOrdernum(Long ordernum) {
+        this.ordernum = ordernum;
     }
 
     public Date getGmtCreate() {

@@ -15,28 +15,28 @@ import javax.persistence.Id;
  * @since 2017-10-08
  */
 
-@Entity(name = "user")
+@Entity(name = "group")
 @DynamicUpdate
 @DynamicInsert
-public class User implements java.io.Serializable{
+public class Group implements java.io.Serializable{
 
-    private static final long serialVersionUID = 18723482374628613L;
+    private static final long serialVersionUID = 18723482374628614L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String phone;
-
-    private String idnumber;
-
     private String name;
 
-    private String password;
+    private Long phone;
 
-    private String salt;
+    private String linkName;
 
-    private String imgUrl;
+    private String address;
+
+    private String logoUrl;
+
+    private Long ordernum;
 
     private Date gmtCreate;
 
@@ -52,22 +52,6 @@ public class User implements java.io.Serializable{
         this.id = id;
     }
 
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getIdnumber() {
-        return idnumber;
-    }
-
-    public void setIdnumber(String idnumber) {
-        this.idnumber = idnumber;
-    }
-
     public String getName() {
         return name;
     }
@@ -76,28 +60,44 @@ public class User implements java.io.Serializable{
         this.name = name;
     }
 
-    public String getPassword() {
-        return password;
+    public Long getPhone() {
+        return phone;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setPhone(Long phone) {
+        this.phone = phone;
     }
 
-    public String getSalt() {
-        return salt;
+    public String getLinkName() {
+        return linkName;
     }
 
-    public void setSalt(String salt) {
-        this.salt = salt;
+    public void setLinkName(String linkName) {
+        this.linkName = linkName;
     }
 
-    public String getImgUrl() {
-        return imgUrl;
+    public String getAddress() {
+        return address;
     }
 
-    public void setImgUrl(String imgUrl) {
-        this.imgUrl = imgUrl;
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getLogoUrl() {
+        return logoUrl;
+    }
+
+    public void setLogoUrl(String logoUrl) {
+        this.logoUrl = logoUrl;
+    }
+
+    public Long getOrdernum() {
+        return ordernum;
+    }
+
+    public void setOrdernum(Long ordernum) {
+        this.ordernum = ordernum;
     }
 
     public Date getGmtCreate() {

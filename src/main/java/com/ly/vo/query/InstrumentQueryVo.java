@@ -12,7 +12,7 @@ import java.util.Date;
  * @author zw
  * @since 2017-11-11
  */
-public class UserQueryVo {
+public class InstrumentQueryVo {
 
     @NotNull
     @Range(min = 0, max = 99999, message = "分页数不正确")
@@ -23,11 +23,15 @@ public class UserQueryVo {
     private Integer size;
 
     
-    private String phone;
+    private Long categroyId;
     
-    private String idnumber;
+    private Long serviceMethodId;
+    
+    private String code;
     
     private String name;
+    
+    private Long groupId;
 
     public Integer getNumber() {
         return number;
@@ -46,20 +50,28 @@ public class UserQueryVo {
     }
 
     
-    public String getPhone() {
-        return phone;
+    public Long getCategroyId() {
+        return categroyId;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setCategroyId(Long categroyId) {
+        this.categroyId = categroyId;
     }
     
-    public String getIdnumber() {
-        return idnumber;
+    public Long getServiceMethodId() {
+        return serviceMethodId;
     }
 
-    public void setIdnumber(String idnumber) {
-        this.idnumber = idnumber;
+    public void setServiceMethodId(Long serviceMethodId) {
+        this.serviceMethodId = serviceMethodId;
+    }
+    
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
     
     public String getName() {
@@ -68,6 +80,14 @@ public class UserQueryVo {
 
     public void setName(String name) {
         this.name = name;
+    }
+    
+    public Long getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(Long groupId) {
+        this.groupId = groupId;
     }
 
     @Override

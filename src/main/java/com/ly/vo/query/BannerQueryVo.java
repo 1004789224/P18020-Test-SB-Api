@@ -12,7 +12,7 @@ import java.util.Date;
  * @author zw
  * @since 2017-11-11
  */
-public class UserQueryVo {
+public class BannerQueryVo {
 
     @NotNull
     @Range(min = 0, max = 99999, message = "分页数不正确")
@@ -22,10 +22,6 @@ public class UserQueryVo {
     @Range(min = 5, max = 200, message = "每页显示数范围5~200")
     private Integer size;
 
-    
-    private String phone;
-    
-    private String idnumber;
     
     private String name;
 
@@ -45,22 +41,6 @@ public class UserQueryVo {
         this.size = size;
     }
 
-    
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-    
-    public String getIdnumber() {
-        return idnumber;
-    }
-
-    public void setIdnumber(String idnumber) {
-        this.idnumber = idnumber;
-    }
     
     public String getName() {
         return name;
