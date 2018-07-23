@@ -13,12 +13,11 @@ import java.util.Date;
 public class UserVo {
 
     private Long id;
-
+    @NotNull(message = "手机号码不能为空")
     private String phone;
-    @NotNull(message = "身份证号码不能为空")
     private String idnumber;
-    @NotNull(message = "姓名不能为空")
     private String name;
+    @NotNull(message = "密码不能为空")
     private String password;
 
     private String imgUrl;

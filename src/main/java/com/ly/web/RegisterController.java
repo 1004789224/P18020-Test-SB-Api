@@ -3,12 +3,9 @@ package com.ly.web;
 import com.ly.anon.AopLog;
 import com.ly.helper.Result;
 import com.ly.helper.ResultHelper;
-import com.ly.repository.UserRepository;
 import com.ly.service.UserService;
 import com.ly.vo.form.UserRegisterVo;
-import com.ly.vo.form.UserVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,13 +24,15 @@ public class RegisterController {
     @Autowired
     private UserService userService;
     /**
-     * TODO 从前台获取用户信息
+     * TODO 从前台获取用户信息 先验证图片验证码是否正确
+     * TODO 调用SMSService来获验证前台传来得短信验证码
      * @return
      */
     @AopLog
     @PostMapping("register")
-    private Result register(HttpServletRequest req,
+    public Result register(HttpServletRequest req,
             @RequestBody @Valid UserRegisterVo registerVo, BindingResult bindingResult){
+
         Long isOk = userService.saveUser( registerVo );
         return ResultHelper.saveResult( isOk );
     }
@@ -43,7 +42,7 @@ public class RegisterController {
      * TODO 注册则提示错误 否则发送短信验证码
      */
     @GetMapping("getphonevc")
-    private Result getPhoneVC(){
+    public Result getPhoneVC(){
         return null;
     }
 }
