@@ -3,6 +3,7 @@ package com.ly.vo.form;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 /**
@@ -14,11 +15,10 @@ public class UserVo {
     private Long id;
 
     private String phone;
-
+    @NotNull(message = "身份证号码不能为空")
     private String idnumber;
-
+    @NotNull(message = "姓名不能为空")
     private String name;
-
     private String password;
 
     private String imgUrl;

@@ -7,6 +7,8 @@ import com.ly.helper.MyPage;
 import com.ly.model.UserM;
 import com.ly.repository.UserRepository;
 import com.ly.service.UserService;
+import com.ly.util.*;
+import com.ly.vo.form.UserRegisterVo;
 import com.ly.vo.query.UserQueryVo;
 import com.ly.vo.form.UserVo;
 import com.querydsl.core.BooleanBuilder;
@@ -18,8 +20,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -62,6 +68,29 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean modifyPassword(UserVo userVo) {
+        return false;
+    }
+
+    /**
+     * 初始注册时,user只有phone和密码
+     *
+     * @param registerVo
+     * @return
+     */
+    @Override
+    public Long saveUser(UserRegisterVo registerVo) {
+        User user = new User();
+        BeanUtils.copyProperties( registerVo, user );
+        user.setGmtCreate( new Date(  ) );
+        user.setGmtModified( new Date() );
+        String saltCode = Random4CharUtil.getSaltCode();
+        user.setSalt( saltCode );
+        user.setPassword( MD5Util.getMD5String( user.getPassword()+saltCode ) );
+        return userRepository.save( user )==null?0L:1L;
+    }
+
+    @Override
     public UserVo findUser(Long id) {
         User user = userRepository.findById(id).orElse(null);
         UserVo userVo = new UserVo();
@@ -73,7 +102,7 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * TODO 给密码加盐
+     * TODO 给密码加密  md5(密码+盐)
      * @param userVo
      * @return
      */
@@ -84,11 +113,22 @@ public class UserServiceImpl implements UserService {
         user.setIsDeleted(0L);
         user.setGmtCreate(new Date());
         user.setGmtModified(new Date());
+        String saltCode = Random4CharUtil.getSaltCode();
+        user.setSalt( saltCode );
+        user.setPassword( MD5Util.getMD5String( user.getPassword()+saltCode) );
         return userRepository.save(user) == null ? 0L : 1L;
     }
-
+    /**
+     *短信注册成功,用户可编辑个人资料,输入身份证号码,名字,头像
+     * @param userVo
+     * @return
+     */
     @Override
-    public Long updateUser(UserVo userVo) {
+    public Long updateUser(UserVo userVo,ImageHolder imageHolder) {
+        if (imageHolder != null && imageHolder.getFileInputStream() != null && imageHolder.getFileName() != null) {
+            String filePath=PathUtil.getImageBasePath() + PathUtil.getTypeImgagePath( User.class );
+
+        }
         User user = userRepository.findById(userVo.getId()).orElse(null);
         if (user == null) {
             return 0L;

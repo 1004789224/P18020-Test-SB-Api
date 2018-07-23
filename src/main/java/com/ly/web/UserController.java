@@ -7,18 +7,26 @@ import com.ly.helper.Result;
 import com.ly.helper.ResultHelper;
 import com.ly.service.UserService;
 
+import com.ly.util.ImageHolder;
+import com.ly.util.ImageUtil;
+import com.ly.util.PathUtil;
 import com.ly.vo.form.UserVo;
 import com.ly.vo.query.UserQueryVo;
 import com.ly.vo.IdReqVo;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 @RestController
 @RequestMapping(value = "/v1/user")
@@ -45,11 +53,22 @@ public class UserController {
 
     @AopLog
     @RequestMapping(value = "/save", method = RequestMethod.POST)
-    public Result save(HttpServletRequest req,
+    public Result save(HttpServletRequest req,MultipartFile file,
                        @RequestBody @Valid UserVo userVo, BindingResult bindingResult) {
         Long isOk;
+        ImageHolder holder = null;
+        if (!file.isEmpty()) {
+            try {
+                holder = new ImageHolder( file.getInputStream(), file.getName() );
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }else {
+            //TODO 如果用户未上传头像 从本地中选择一张图片作为默认头像
+        }
+
         if (userVo.getId() != null && userVo.getId() > 0) {
-            isOk = userService.updateUser(userVo);
+            isOk = userService.updateUser(userVo, holder );
         } else {
             isOk = userService.saveUser(userVo);
         }

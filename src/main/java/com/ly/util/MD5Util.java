@@ -114,6 +114,6 @@ public class MD5Util {
 	}
 	
 	public static void main(String[] args) throws IOException {
-		System.out.println("md5:" + MD5Util.getMD5String("customerId=yuwei12345678&transactionId=20141104002255abc&cardNo=3102788354633&productId=1&promotionId=1000&propsName=abcJMTT"));
+		System.out.println("md5:" + MD5Util.getMD5String("123456zxcv"));
 	}
 }

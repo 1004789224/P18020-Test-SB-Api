@@ -65,6 +65,7 @@ public class InstrumentServiceImpl implements InstrumentService {
 
     @Override
     public List<InstrumentDto> listInstrument() {
+
         return null;//getListDto(instrumentRepository.getByIsDeleted(0L));
     }
 

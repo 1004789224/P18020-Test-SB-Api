@@ -3,6 +3,8 @@ package com.ly.service;
 import com.ly.domain.User;
 import com.ly.dto.UserDto;
 import com.ly.helper.MyPage;
+import com.ly.util.ImageHolder;
+import com.ly.vo.form.UserRegisterVo;
 import com.ly.vo.query.UserQueryVo;
 import com.ly.vo.form.UserVo;
 import java.util.List;
@@ -16,7 +18,12 @@ public interface UserService {
 
     Long saveUser(UserVo userVo);
 
-    Long updateUser(UserVo userVo);
+    /**
+     *短信注册成功,用户可编辑个人资料,输入身份证号码,名字,头像
+     * @param userVo
+     * @return
+     */
+    Long updateUser(UserVo userVo, ImageHolder imageHolder);
 
     Long del(Long id);
 
@@ -24,4 +31,11 @@ public interface UserService {
 
     List<UserDto> listUser();
 
+    boolean modifyPassword(UserVo userVo);
+    /**
+     * 初始注册时,user只有phone和密码
+     * @param registerVo
+     * @return
+     */
+    Long saveUser(UserRegisterVo registerVo);
 }
