@@ -153,7 +153,10 @@ public class UserServiceImpl implements UserService {
             return 0L;
         }
         BeanUtils.copyProperties(userVo, user);
-        return userRepository.save(user) == null ? 0L : 1L;
+        user.setGmtModified( new Date() );
+        int i = userRepository.updateUser( user );
+        return i==1?1L:0L;
+
     }
     @Override
     public UserVo findUser(Long id) {
