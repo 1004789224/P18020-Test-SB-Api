@@ -1,20 +1,26 @@
 package com.ly.atest;
 
+import com.ly.WebapiApplication;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.runner.RunWith;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
 /**
  * Created by zhongwei on 28/03/2017.
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringBootTest(classes = WebapiApplication.class)
 public class MyTest {
-    public static void main(String[] args) {
-//        BluePayDisbursementCallbackReqVo bluePayDisbursementCallbackReqVo=new BluePayDisbursementCallbackReqVo();
-//        bluePayDisbursementCallbackReqVo.setBtId("xxx");
-//        System.out.println(bluePayDisbursementCallbackReqVo.toString());
-        int num=0;
-        while(true){
-            System.out.println(num);
-            if(num==1){
-                break;
-            }
-            ++num;
-        }
+    @Before
+    void init() {
+        System.out.println( "=====测试开始======" );
+    }
+
+    @After
+    void end() {
+        System.out.println( "======测试结束======" );
     }
 }
