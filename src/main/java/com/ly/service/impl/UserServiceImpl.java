@@ -8,9 +8,11 @@ import com.ly.model.UserM;
 import com.ly.repository.UserRepository;
 import com.ly.service.UserService;
 import com.ly.util.*;
+import com.ly.vo.form.ModifyUserVo;
 import com.ly.vo.form.UserRegisterVo;
 import com.ly.vo.query.UserQueryVo;
 import com.ly.vo.form.UserVo;
+import com.ly.vo.rsp.UserInfoRspVo;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.Expressions;
 import org.springframework.beans.BeanUtils;
@@ -67,9 +69,18 @@ public class UserServiceImpl implements UserService {
         return null;//getListDto(userRepository.getByIsDeleted(0L));
     }
 
+
+    /**
+     *
+     * @param userVo 包含老密码,新密码 以及用户id
+     *               用户Id在controller中调用JWTService获取
+     * @return
+     */
     @Override
-    public boolean modifyPassword(UserVo userVo) {
-        return false;
+    public boolean modifyPassword(ModifyUserVo userVo) {
+        int i = userRepository.updatePassword(
+                userVo.getId(), userVo.getOldPassword(), userVo.getNewPassword() );
+        return i==1?true:false;
     }
 
     /**
@@ -90,6 +101,22 @@ public class UserServiceImpl implements UserService {
         return userRepository.save( user )==null?0L:1L;
     }
 
+    /**
+     * TODO 引入JWT 给 客户端发送token
+     * @param userVo
+     * @return
+     */
+    @Override
+    public UserDto login(UserVo userVo) {
+        User user = userRepository.findUserByPasswordAndPhone( userVo.getPhone(), userVo.getPassword() );
+        if (user != null) {
+            UserDto userDto = new UserDto();
+            BeanUtils.copyProperties( user, userDto );
+            return userDto;
+        }
+        return null;
+    }
+
     @Override
     public UserVo findUser(Long id) {
         User user = userRepository.findById(id).orElse(null);
@@ -102,7 +129,6 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * TODO 给密码加密  md5(密码+盐)
      * @param userVo
      * @return
      */
@@ -126,8 +152,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public Long updateUser(UserVo userVo,ImageHolder imageHolder) {
         if (imageHolder != null && imageHolder.getFileInputStream() != null && imageHolder.getFileName() != null) {
-            String filePath=PathUtil.getImageBasePath() + PathUtil.getTypeImgagePath( User.class );
-
+            String targetDir = PathUtil.getTargetDir( User.class );
+            String image = ImageUtil.saveImage( imageHolder, targetDir );
+            userVo.setImgUrl( image );
         }
         User user = userRepository.findById(userVo.getId()).orElse(null);
         if (user == null) {
@@ -137,9 +164,18 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user) == null ? 0L : 1L;
     }
 
+    /**
+     * 删除用户,软删除,但是删除时将本地中得图片删除掉 节约磁盘空间
+     * @param id
+     * @return
+     */
     @Override
     public Long del(Long id) {
         User user = userRepository.findById(id).orElse(null);
+        if (user != null) {
+            ImageUtil.deleteFileOrPath( user.getImgUrl() );
+            user.setImgUrl( null );
+        }
         return userRepository.save(user) == null ? 0L : 1L;
     }
 

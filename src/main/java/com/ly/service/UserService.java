@@ -4,9 +4,12 @@ import com.ly.domain.User;
 import com.ly.dto.UserDto;
 import com.ly.helper.MyPage;
 import com.ly.util.ImageHolder;
+import com.ly.vo.form.ModifyUserVo;
 import com.ly.vo.form.UserRegisterVo;
 import com.ly.vo.query.UserQueryVo;
 import com.ly.vo.form.UserVo;
+import com.ly.vo.rsp.UserInfoRspVo;
+
 import java.util.List;
 /**
  * @author zw
@@ -31,11 +34,14 @@ public interface UserService {
 
     List<UserDto> listUser();
 
-    boolean modifyPassword(UserVo userVo);
+    boolean modifyPassword(ModifyUserVo userVo);
     /**
      * 初始注册时,user只有phone和密码
      * @param registerVo
      * @return
      */
     Long saveUser(UserRegisterVo registerVo);
+
+
+    UserDto login(UserVo userVo);
 }

@@ -2,12 +2,11 @@ package com.ly.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import javax.imageio.ImageIO;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
@@ -86,6 +85,21 @@ public class ImageUtil {
             }
             fileOrPath.delete();
         }
+    }
+
+    public static String  saveImage(ImageHolder imageHolder, String targetPath) {
+        makeDirPath( targetPath );
+        String extension = getFileExtension( imageHolder.getFileName() );
+        String filePath = targetPath + getRandomFileName()+extension;
+        try {
+            FileOutputStream outputStream = new FileOutputStream( filePath );
+            FileCopyUtils.copy( imageHolder.getFileInputStream() , outputStream  );
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException( "图片上传失败" + e.getMessage() );
+        }
+        return filePath;
+
     }
 
 

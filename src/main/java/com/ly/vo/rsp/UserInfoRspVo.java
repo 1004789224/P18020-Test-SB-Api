@@ -8,7 +8,25 @@ public class UserInfoRspVo {
 
     private String name;
 
-    private String authenticationStatus;
+    private String imgUrl;
+
+    public String getImgUrl() {
+        return imgUrl;
+    }
+
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    private Long id;
 
     public String getPhone() {
         return phone;
@@ -26,13 +44,6 @@ public class UserInfoRspVo {
         this.name = name;
     }
 
-    public String getAuthenticationStatus() {
-        return authenticationStatus;
-    }
-
-    public void setAuthenticationStatus(String authenticationStatus) {
-        this.authenticationStatus = authenticationStatus;
-    }
 
     @Override
     public String toString() {

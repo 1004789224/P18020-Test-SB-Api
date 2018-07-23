@@ -26,8 +26,8 @@ public interface UserRepository extends PagingAndSortingRepository<User, Long>,
     User findUserByPasswordAndPhone(String password,String phone);
 
     @Modifying
-    @Query("update user set password= :newPassword where phone= :phone and password= :oldPassword")
-    int updatePassword(@Param( "phone" ) String phone,
+    @Query("update user set password= :newPassword where id= :id and password= :oldPassword")
+    int updatePassword(@Param( "id" ) Long id,
                        @Param( "oldPassword" ) String oldPassword,
                        @Param( "newPassword" ) String newPassword);
 

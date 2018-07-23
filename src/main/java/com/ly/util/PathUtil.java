@@ -34,4 +34,8 @@ public class PathUtil {
         String imagePath = "/images/"+clz.getSimpleName()+"/";
         return imagePath.replace( "/", seperator );
     }
+
+    public static String getTargetDir(Class clz) {
+        return PathUtil.getTypeImgagePath( clz );
+    }
 }
