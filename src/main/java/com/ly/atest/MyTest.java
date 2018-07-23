@@ -15,12 +15,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @SpringBootTest(classes = WebapiApplication.class)
 public class MyTest {
     @Before
-    void init() {
+    public void init() {
         System.out.println( "=====测试开始======" );
     }
 
     @After
-    void end() {
+    public void end() {
         System.out.println( "======测试结束======" );
     }
 }

@@ -36,6 +36,6 @@ public class PathUtil {
     }
 
     public static String getTargetDir(Class clz) {
-        return PathUtil.getTypeImgagePath( clz );
+        return PathUtil.getImageBasePath()+PathUtil.getTypeImgagePath( clz );
     }
 }

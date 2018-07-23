@@ -64,11 +64,6 @@ public class UserServiceImpl implements UserService {
         return getPageDto(componentPage);
     }
 
-    @Override
-    public List<UserDto> listUser() {
-        return null;//getListDto(userRepository.getByIsDeleted(0L));
-    }
-
     /**
      * 删除用户,软删除,但是删除时将本地中得图片删除掉 节约磁盘空间
      * @param id
@@ -144,11 +139,11 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public Long updateUser(UserVo userVo,ImageHolder imageHolder) {
-        if (userVo.getImgUrl() != null) {
-            ImageUtil.deleteFileOrPath( userVo.getImgUrl() );
-        }
         if (imageHolder != null && imageHolder.getFileInputStream() != null
                 && imageHolder.getFileName() != null) {
+            if (userVo.getImgUrl() != null) {
+                ImageUtil.deleteFileOrPath( userVo.getImgUrl() );
+            }
             String targetDir = PathUtil.getTargetDir( User.class );
             String image = ImageUtil.saveImage( imageHolder, targetDir );
             userVo.setImgUrl( image );
@@ -213,4 +208,10 @@ public class UserServiceImpl implements UserService {
         }
         return userDtos;
     }
+
+    @Override
+    public List<UserDto> listUser() {
+        return null;//getListDto(userRepository.getByIsDeleted(0L));
+    }
+
 }
