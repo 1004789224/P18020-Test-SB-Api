@@ -69,7 +69,23 @@ public class UserServiceImpl implements UserService {
         return null;//getListDto(userRepository.getByIsDeleted(0L));
     }
 
-
+    /**
+     * 删除用户,软删除,但是删除时将本地中得图片删除掉 节约磁盘空间
+     * @param id
+     * @return
+     */
+    @Override
+    public Long del(Long id) {
+        User user = userRepository.findById(id).orElse(null);
+        if (user != null) {
+            user.setIsDeleted( 1L );
+            if (user.getImgUrl() != null) {
+                ImageUtil.deleteFileOrPath( user.getImgUrl() );
+                user.setImgUrl( null );
+            }
+        }
+        return userRepository.save(user) == null ? 0L : 1L;
+    }
     /**
      *
      * @param userVo 包含老密码,新密码 以及用户id
@@ -79,7 +95,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean modifyPassword(ModifyUserVo userVo) {
         int i = userRepository.updatePassword(
-                userVo.getId(), userVo.getOldPassword(), userVo.getNewPassword() );
+                userVo.getId(),
+                userVo.getOldPassword(),
+                userVo.getNewPassword(),
+                new Date() );
         return i==1?true:false;
     }
 
@@ -108,7 +127,8 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public UserDto login(UserVo userVo) {
-        User user = userRepository.findUserByPasswordAndPhone( userVo.getPhone(), userVo.getPassword() );
+        User user = userRepository.findUserByPasswordAndPhone( userVo.getPhone(),
+                userVo.getPassword() );
         if (user != null) {
             UserDto userDto = new UserDto();
             BeanUtils.copyProperties( user, userDto );
@@ -117,6 +137,29 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
+    /**
+     *短信注册成功,用户可编辑个人资料,输入身份证号码,名字,头像
+     * @param userVo
+     * @return
+     */
+    @Override
+    public Long updateUser(UserVo userVo,ImageHolder imageHolder) {
+        if (userVo.getImgUrl() != null) {
+            ImageUtil.deleteFileOrPath( userVo.getImgUrl() );
+        }
+        if (imageHolder != null && imageHolder.getFileInputStream() != null
+                && imageHolder.getFileName() != null) {
+            String targetDir = PathUtil.getTargetDir( User.class );
+            String image = ImageUtil.saveImage( imageHolder, targetDir );
+            userVo.setImgUrl( image );
+        }
+        User user = userRepository.findById(userVo.getId()).orElse(null);
+        if (user == null) {
+            return 0L;
+        }
+        BeanUtils.copyProperties(userVo, user);
+        return userRepository.save(user) == null ? 0L : 1L;
+    }
     @Override
     public UserVo findUser(Long id) {
         User user = userRepository.findById(id).orElse(null);
@@ -144,40 +187,9 @@ public class UserServiceImpl implements UserService {
         user.setPassword( MD5Util.getMD5String( user.getPassword()+saltCode) );
         return userRepository.save(user) == null ? 0L : 1L;
     }
-    /**
-     *短信注册成功,用户可编辑个人资料,输入身份证号码,名字,头像
-     * @param userVo
-     * @return
-     */
-    @Override
-    public Long updateUser(UserVo userVo,ImageHolder imageHolder) {
-        if (imageHolder != null && imageHolder.getFileInputStream() != null && imageHolder.getFileName() != null) {
-            String targetDir = PathUtil.getTargetDir( User.class );
-            String image = ImageUtil.saveImage( imageHolder, targetDir );
-            userVo.setImgUrl( image );
-        }
-        User user = userRepository.findById(userVo.getId()).orElse(null);
-        if (user == null) {
-            return 0L;
-        }
-        BeanUtils.copyProperties(userVo, user);
-        return userRepository.save(user) == null ? 0L : 1L;
-    }
 
-    /**
-     * 删除用户,软删除,但是删除时将本地中得图片删除掉 节约磁盘空间
-     * @param id
-     * @return
-     */
-    @Override
-    public Long del(Long id) {
-        User user = userRepository.findById(id).orElse(null);
-        if (user != null) {
-            ImageUtil.deleteFileOrPath( user.getImgUrl() );
-            user.setImgUrl( null );
-        }
-        return userRepository.save(user) == null ? 0L : 1L;
-    }
+
+
 
     private MyPage<UserDto> getPageDto(Page<User> componentPage){
         List<UserDto> userDtos = new LinkedList<>();
