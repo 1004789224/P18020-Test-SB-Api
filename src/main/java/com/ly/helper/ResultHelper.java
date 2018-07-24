@@ -10,5 +10,7 @@ public class ResultHelper {
         return isOk == 1L ? new Result().setData(1L) : new Result(ErrorCode.SAVE_FAIL);
     }
 
-
+    public static Result VerificationHelp() {
+        return new Result(ErrorCode.CODE_IS_ERROR);
+    }
 }

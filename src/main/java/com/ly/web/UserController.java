@@ -10,6 +10,7 @@ import com.ly.service.UserService;
 import com.ly.util.ImageHolder;
 import com.ly.util.ImageUtil;
 import com.ly.util.PathUtil;
+import com.ly.vo.form.ModifyUserVo;
 import com.ly.vo.form.UserVo;
 import com.ly.vo.query.UserQueryVo;
 import com.ly.vo.IdReqVo;
@@ -67,7 +68,6 @@ public class UserController {
         }else {
             //TODO 如果用户未上传头像 从本地中选择一张图片作为默认头像
         }
-
         if (userVo.getId() != null && userVo.getId() > 0) {
             UserUpdateVo updateVo = new UserUpdateVo();
             BeanUtils.copyProperties( userVo,updateVo );
@@ -84,5 +84,36 @@ public class UserController {
     public Result del(@RequestBody @Valid IdReqVo idReqVo, BindingResult bindingResult) {
         long isOk = userService.del(idReqVo.getIid());
         return ResultHelper.delResult(isOk);
+    }
+
+
+    @PostMapping("updateuser")
+    @AopLog
+    public Result updeteUser(@RequestBody @Valid UserUpdateVo updateVo
+            , BindingResult bindingResult, MultipartFile imgFile) {
+        ImageHolder imageHolder;
+        if (!imgFile.isEmpty()) {
+            try {
+                imageHolder = new ImageHolder( imgFile.getInputStream(), imgFile.getOriginalFilename() );
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new RuntimeException( "获取上传头像文件流失败" );
+            }
+        } else {
+            //TODO 如果用户未上传头像 从本地中选择一张图片作为默认头像
+            imageHolder = null;
+        }
+        Long isOk = userService.updateUser( updateVo, imageHolder );
+        return ResultHelper.saveResult( isOk );
+    }
+
+    @PostMapping("modifypwd")
+    @AopLog
+    public Result modifyPassword(@RequestBody @Valid ModifyUserVo userVo,BindingResult bindingResult){
+        if (userVo.getNewPassword().equals( userVo.getOldPassword() )) {
+            return new Result( ErrorCode.SAMEPASSWORD );
+        }
+        final  Long isOk = userService.modifyPassword( userVo );
+        return ResultHelper.saveResult( isOk );
     }
 }

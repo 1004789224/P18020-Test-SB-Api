@@ -81,7 +81,7 @@ public enum ErrorCode {
     /**
      * 验证码错误
      */
-    CODE_IS_ERROR("S00107", "Kode verifikasi salah!"),
+    CODE_IS_ERROR("S00107", "验证码错误!"),
 
     /**
      * 验证码错误
@@ -172,7 +172,13 @@ public enum ErrorCode {
      * 账户未激活
      */
     ACCOUNT_ACTION("100117", " Akun telah diaktifkan"),
+
+    WRONGPHONEORPWD("100118","账号无效或密码错误"),
+
+    UPDATEERROR( "100119", "更新用户信息失败" ),
+    SAMEPASSWORD( "100120", "重复的密码!" ),
     ;
+
 
 
     private String code;

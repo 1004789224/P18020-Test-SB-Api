@@ -4,6 +4,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 /**
  * @author zw
@@ -11,7 +12,7 @@ import javax.validation.constraints.NotNull;
  */
 public class UserRegisterVo {
 
-
+    @Pattern(regexp = "^1(3|4|5|7|8)\\d{9}$",message = "手机号码格式错误")
     @NotNull(message = "手机号码不能为空")
     private String phone;
 

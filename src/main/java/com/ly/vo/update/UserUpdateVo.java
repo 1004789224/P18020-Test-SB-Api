@@ -4,6 +4,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 /**
  * @author lw
@@ -13,6 +14,7 @@ import javax.validation.constraints.NotNull;
  */
 public class UserUpdateVo {
     private Long id;
+    @Pattern( regexp = "^^(\\d{6})(\\d{4})(\\d{2})(\\d{2})(\\d{3})([0-9]|X)$",message = "身份证号码格式不对")
     @NotNull(message = "身份证号码不得为空")
     private String idnumber;
     private String name;

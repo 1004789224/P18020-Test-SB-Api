@@ -61,8 +61,8 @@ public class UserServiceImplTest extends MyTest {
         userVo.setIdnumber( "512659199601156585" );
         InputStream inputStream =
                 new FileInputStream( "D:\\Is\\upload\\images\\User" +
-                        "\\2018072410454228273.jpg" );
-        String fileName = "2018072410454228273.jpg";
+                        "\\2018072410253538515.jpg" );
+        String fileName = "2018072410253538515.jpg";
         ImageHolder imageHolder = new ImageHolder(inputStream,fileName);
         UserUpdateVo updateVo = new UserUpdateVo();
         BeanUtils.copyProperties( userVo, updateVo );

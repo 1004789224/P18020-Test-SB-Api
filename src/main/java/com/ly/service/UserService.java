@@ -35,7 +35,7 @@ public interface UserService {
 
     List<UserDto> listUser();
 
-    boolean modifyPassword(ModifyUserVo userVo);
+    Long modifyPassword(ModifyUserVo userVo);
     /**
      * 初始注册时,user只有phone和密码
      * @param registerVo
@@ -43,6 +43,10 @@ public interface UserService {
      */
     Long saveUser(UserRegisterVo registerVo);
 
-
+    /**
+     * 根据phone和密码进行登陆
+     * @param userVo
+     * @return
+     */
     UserDto login(UserVo userVo);
 }

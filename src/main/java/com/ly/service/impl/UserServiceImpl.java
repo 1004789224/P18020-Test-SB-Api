@@ -96,7 +96,7 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     @Override
-    public boolean modifyPassword(ModifyUserVo userVo) {
+    public Long modifyPassword(ModifyUserVo userVo) {
         Optional<User> user = userRepository.findById( userVo.getId() );
         String salt;
         if (user.get() != null) {
@@ -106,9 +106,9 @@ public class UserServiceImpl implements UserService {
                     MD5Util.getMD5String( userVo.getOldPassword() + salt ),
                     MD5Util.getMD5String( userVo.getNewPassword() + salt ),
                     new Date() );
-            return i == 1 ? true : false;
+            return i == 1 ? 1L : 0L;
         } else {
-            return false;
+            return 0L;
         }
     }
 
@@ -122,12 +122,12 @@ public class UserServiceImpl implements UserService {
     public Long saveUser(UserRegisterVo registerVo) {
         User user = new User();
         BeanUtils.copyProperties( registerVo, user );
-        user.setGmtCreate( new Date() );
-        user.setGmtModified( new Date() );
         String saltCode = Random4CharUtil.getSaltCode();
         user.setIsDeleted( 0L );
         user.setSalt( saltCode );
         user.setPassword( MD5Util.getMD5String( user.getPassword() + saltCode ) );
+        user.setGmtCreate( new Date() );
+        user.setGmtModified( new Date() );
         return userRepository.save( user ) == null ? 0L : 1L;
     }
 
@@ -180,7 +180,6 @@ public class UserServiceImpl implements UserService {
             String image = ImageUtil.saveImage( imageHolder, targetDir );
             updateVo.setImgUrl( image );
         }
-        log.debug( "根据" );
         if (user == null) {
             return 0L;
         }
