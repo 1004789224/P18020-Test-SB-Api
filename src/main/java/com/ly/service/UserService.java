@@ -9,6 +9,7 @@ import com.ly.vo.form.UserRegisterVo;
 import com.ly.vo.query.UserQueryVo;
 import com.ly.vo.form.UserVo;
 import com.ly.vo.rsp.UserInfoRspVo;
+import com.ly.vo.update.UserUpdateVo;
 
 import java.util.List;
 /**
@@ -23,10 +24,10 @@ public interface UserService {
 
     /**
      *短信注册成功,用户可编辑个人资料,输入身份证号码,名字,头像
-     * @param userVo
+     * @param updateVo
      * @return
      */
-    Long updateUser(UserVo userVo, ImageHolder imageHolder);
+    Long updateUser(UserUpdateVo updateVo, ImageHolder imageHolder);
 
     Long del(Long id);
 

@@ -23,16 +23,10 @@ import java.util.List;
 public interface UserRepository extends PagingAndSortingRepository<User, Long>,
         JpaSpecificationExecutor<User>,
         QuerydslPredicateExecutor<User> {
-    /**
-     * 登陆检验
-     *
-     * @return
-     */
-    User findUserByPasswordAndPhone(String password, String phone);
 
     @Transactional
     @Modifying
-    @Query("update user set password= :newPassword,gmtModified=:gmt_modified " +
+    @Query("update user set password= :newPassword,gmtModified=:gmtModified " +
             "where id= :id and password= :oldPassword")
     int updatePassword(@Param("id") Long id,
                        @Param("oldPassword") String oldPassword,
@@ -47,9 +41,4 @@ public interface UserRepository extends PagingAndSortingRepository<User, Long>,
      */
     User getUserByPhone(String phone);
 
-    @Transactional
-    @Modifying
-    @Query("update user set name= :name,imgUrl= :imgUrl,idnumber=:idnumber," +
-            "gmtModified=:gmtModified where id=:id")
-    int updateUser(User user);
 }

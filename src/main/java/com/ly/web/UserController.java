@@ -13,6 +13,7 @@ import com.ly.util.PathUtil;
 import com.ly.vo.form.UserVo;
 import com.ly.vo.query.UserQueryVo;
 import com.ly.vo.IdReqVo;
+import com.ly.vo.update.UserUpdateVo;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,7 +69,10 @@ public class UserController {
         }
 
         if (userVo.getId() != null && userVo.getId() > 0) {
-            isOk = userService.updateUser(userVo, holder );
+            UserUpdateVo updateVo = new UserUpdateVo();
+            BeanUtils.copyProperties( userVo,updateVo );
+            isOk = userService.updateUser(updateVo, holder );
+
         } else {
             isOk = userService.saveUser(userVo);
         }

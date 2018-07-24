@@ -35,7 +35,4 @@ public class PathUtil {
         return imagePath.replace( "/", seperator );
     }
 
-    public static String getTargetDir(Class clz) {
-        return PathUtil.getImageBasePath()+PathUtil.getTypeImgagePath( clz );
-    }
 }

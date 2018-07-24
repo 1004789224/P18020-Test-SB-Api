@@ -90,15 +90,17 @@ public class ImageUtil {
     public static String  saveImage(ImageHolder imageHolder, String targetPath) {
         makeDirPath( targetPath );
         String extension = getFileExtension( imageHolder.getFileName() );
-        String filePath = targetPath + getRandomFileName()+extension;
+        String fileName = getRandomFileName();
+        String relativePath = targetPath + fileName+ extension;
+        String realPath = PathUtil.getImageBasePath()+targetPath + fileName+extension;
         try {
-            FileOutputStream outputStream = new FileOutputStream( filePath );
+            FileOutputStream outputStream = new FileOutputStream( realPath );
             FileCopyUtils.copy( imageHolder.getFileInputStream() , outputStream  );
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException( "图片上传失败" + e.getMessage() );
         }
-        return filePath;
+        return relativePath;
 
     }
 

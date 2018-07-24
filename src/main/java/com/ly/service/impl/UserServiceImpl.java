@@ -13,8 +13,11 @@ import com.ly.vo.form.UserRegisterVo;
 import com.ly.vo.query.UserQueryVo;
 import com.ly.vo.form.UserVo;
 import com.ly.vo.rsp.UserInfoRspVo;
+import com.ly.vo.update.UserUpdateVo;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.Expressions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -31,70 +34,82 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
 
+
+    private static Logger log = LoggerFactory.getLogger( UserServiceImpl.class );
     @Autowired
     private UserRepository userRepository;
-    
+
     @Override
     public MyPage<UserDto> listPage(UserQueryVo userQueryVo) {
         BooleanBuilder where = new BooleanBuilder();
 
 
-        if (StringUtils.hasText(userQueryVo.getPhone())) {
-            where.and(QUser.user.phone.like(Expressions.asString("%").concat(userQueryVo.getPhone()).concat("%")));
+        if (StringUtils.hasText( userQueryVo.getPhone() )) {
+            where.and( QUser.user.phone.like( Expressions.asString( "%" ).concat( userQueryVo.getPhone() ).concat( "%" ) ) );
         }
 
 
-        if (StringUtils.hasText(userQueryVo.getIdnumber())) {
-            where.and(QUser.user.idnumber.like(Expressions.asString("%").concat(userQueryVo.getIdnumber()).concat("%")));
+        if (StringUtils.hasText( userQueryVo.getIdnumber() )) {
+            where.and( QUser.user.idnumber.like( Expressions.asString( "%" ).concat( userQueryVo.getIdnumber() ).concat( "%" ) ) );
         }
 
 
-        if (StringUtils.hasText(userQueryVo.getName())) {
-            where.and(QUser.user.name.like(Expressions.asString("%").concat(userQueryVo.getName()).concat("%")));
+        if (StringUtils.hasText( userQueryVo.getName() )) {
+            where.and( QUser.user.name.like( Expressions.asString( "%" ).concat( userQueryVo.getName() ).concat( "%" ) ) );
         }
 
 
-        Sort sort = new Sort(Sort.Direction.ASC, UserM.ID);
-        Pageable page = PageRequest.of(userQueryVo.getNumber(), userQueryVo.getSize(), sort);
-        Page<User> componentPage = userRepository.findAll(where, page);
-        return getPageDto(componentPage);
+        Sort sort = new Sort( Sort.Direction.ASC, UserM.ID );
+        Pageable page = PageRequest.of( userQueryVo.getNumber(), userQueryVo.getSize(), sort );
+        Page<User> componentPage = userRepository.findAll( where, page );
+        return getPageDto( componentPage );
     }
 
     /**
      * 删除用户,软删除,但是删除时将本地中得图片删除掉 节约磁盘空间
+     *
      * @param id
      * @return
      */
     @Override
     public Long del(Long id) {
-        User user = userRepository.findById(id).orElse(null);
+        User user = userRepository.findById( id ).orElse( null );
         if (user != null) {
             user.setIsDeleted( 1L );
             if (user.getImgUrl() != null) {
                 ImageUtil.deleteFileOrPath( user.getImgUrl() );
-                user.setImgUrl( null );
+                user.setImgUrl( " " );
             }
         }
-        return userRepository.save(user) == null ? 0L : 1L;
+        return userRepository.save( user ) == null ? 0L : 1L;
     }
+
     /**
-     *
      * @param userVo 包含老密码,新密码 以及用户id
      *               用户Id在controller中调用JWTService获取
+     *              TODO 在controller中需验证 新老密码不相同
      * @return
      */
     @Override
     public boolean modifyPassword(ModifyUserVo userVo) {
-        int i = userRepository.updatePassword(
-                userVo.getId(),
-                userVo.getOldPassword(),
-                userVo.getNewPassword(),
-                new Date() );
-        return i==1?true:false;
+        Optional<User> user = userRepository.findById( userVo.getId() );
+        String salt;
+        if (user.get() != null) {
+            salt = user.get().getSalt();
+            int i = userRepository.updatePassword(
+                    userVo.getId(),
+                    MD5Util.getMD5String( userVo.getOldPassword() + salt ),
+                    MD5Util.getMD5String( userVo.getNewPassword() + salt ),
+                    new Date() );
+            return i == 1 ? true : false;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -107,63 +122,80 @@ public class UserServiceImpl implements UserService {
     public Long saveUser(UserRegisterVo registerVo) {
         User user = new User();
         BeanUtils.copyProperties( registerVo, user );
-        user.setGmtCreate( new Date(  ) );
+        user.setGmtCreate( new Date() );
         user.setGmtModified( new Date() );
         String saltCode = Random4CharUtil.getSaltCode();
+        user.setIsDeleted( 0L );
         user.setSalt( saltCode );
-        user.setPassword( MD5Util.getMD5String( user.getPassword()+saltCode ) );
-        return userRepository.save( user )==null?0L:1L;
+        user.setPassword( MD5Util.getMD5String( user.getPassword() + saltCode ) );
+        return userRepository.save( user ) == null ? 0L : 1L;
     }
 
     /**
      * TODO 引入JWT 给 客户端发送token
+     *
      * @param userVo
      * @return
      */
     @Override
     public UserDto login(UserVo userVo) {
-        User user = userRepository.findUserByPasswordAndPhone( userVo.getPhone(),
-                userVo.getPassword() );
-        if (user != null) {
-            UserDto userDto = new UserDto();
-            BeanUtils.copyProperties( user, userDto );
-            return userDto;
+        String phone = userVo.getPhone();
+        User byPhone = userRepository.getUserByPhone( phone );
+        BooleanBuilder where = new BooleanBuilder();
+        if (userVo.getPassword() == null || userVo.getPhone() == null) {
+            return null;
         }
-        return null;
+        where.and( QUser.user.phone.eq( userVo.getPhone() ) );
+        where.and( QUser.user.password.eq(
+                MD5Util.getMD5String( userVo.getPassword()
+                        + byPhone.getSalt() ) )
+        );
+        where.and( QUser.user.isDeleted.ne( 1L ) );
+        Optional<User> user = userRepository.findOne( where );
+        log.debug( "ServiceLogin得到的User:" + user.toString() );
+        if (user.get() != null) {
+            UserDto userDto = new UserDto();
+            BeanUtils.copyProperties( user.get(), userDto );
+            return userDto;
+        } else {
+            return null;
+        }
     }
 
     /**
-     *短信注册成功,用户可编辑个人资料,输入身份证号码,名字,头像
-     * @param userVo
+     * 短信注册成功,用户可编辑个人资料,输入身份证号码,名字,头像
+     *
+     * @param updateVo
      * @return
      */
     @Override
-    public Long updateUser(UserVo userVo,ImageHolder imageHolder) {
+    public Long updateUser(UserUpdateVo updateVo, ImageHolder imageHolder) {
+        User user = userRepository.findById( updateVo.getId() ).orElse( null );
         if (imageHolder != null && imageHolder.getFileInputStream() != null
                 && imageHolder.getFileName() != null) {
-            if (userVo.getImgUrl() != null) {
-                ImageUtil.deleteFileOrPath( userVo.getImgUrl() );
+            if (user.getImgUrl() != null) {
+                ImageUtil.deleteFileOrPath( user.getImgUrl() );
             }
-            String targetDir = PathUtil.getTargetDir( User.class );
+            String targetDir = PathUtil.getTypeImgagePath( User.class );
             String image = ImageUtil.saveImage( imageHolder, targetDir );
-            userVo.setImgUrl( image );
+            updateVo.setImgUrl( image );
         }
-        User user = userRepository.findById(userVo.getId()).orElse(null);
+        log.debug( "根据" );
         if (user == null) {
             return 0L;
         }
-        BeanUtils.copyProperties(userVo, user);
+        BeanUtils.copyProperties( updateVo, user );
         user.setGmtModified( new Date() );
-        int i = userRepository.updateUser( user );
-        return i==1?1L:0L;
+        return userRepository.save( user ) == null ? 0L : 1L;
 
     }
+
     @Override
     public UserVo findUser(Long id) {
-        User user = userRepository.findById(id).orElse(null);
+        User user = userRepository.findById( id ).orElse( null );
         UserVo userVo = new UserVo();
-        if (user != null){
-            BeanUtils.copyProperties(user, userVo);
+        if (user != null) {
+            BeanUtils.copyProperties( user, userVo );
             return userVo;
         }
         return null;
@@ -176,38 +208,36 @@ public class UserServiceImpl implements UserService {
     @Override
     public Long saveUser(UserVo userVo) {
         User user = new User();
-        BeanUtils.copyProperties(userVo, user);        
-        user.setIsDeleted(0L);
-        user.setGmtCreate(new Date());
-        user.setGmtModified(new Date());
+        BeanUtils.copyProperties( userVo, user );
+        user.setIsDeleted( 0L );
+        user.setGmtCreate( new Date() );
+        user.setGmtModified( new Date() );
         String saltCode = Random4CharUtil.getSaltCode();
         user.setSalt( saltCode );
-        user.setPassword( MD5Util.getMD5String( user.getPassword()+saltCode) );
-        return userRepository.save(user) == null ? 0L : 1L;
+        user.setPassword( MD5Util.getMD5String( user.getPassword() + saltCode ) );
+        return userRepository.save( user ) == null ? 0L : 1L;
     }
 
 
-
-
-    private MyPage<UserDto> getPageDto(Page<User> componentPage){
+    private MyPage<UserDto> getPageDto(Page<User> componentPage) {
         List<UserDto> userDtos = new LinkedList<>();
         for (User user : componentPage.getContent()) {
             UserDto userDto = new UserDto();
-            BeanUtils.copyProperties(user,userDto);
-            userDtos.add(userDto);
+            BeanUtils.copyProperties( user, userDto );
+            userDtos.add( userDto );
         }
         MyPage<UserDto> myPage = new MyPage();
-        myPage.setContent(userDtos);
-        myPage.setTotalElements(componentPage.getTotalElements());
+        myPage.setContent( userDtos );
+        myPage.setTotalElements( componentPage.getTotalElements() );
         return myPage;
     }
 
-    private List<UserDto> getListDto(List<User> userList){
+    private List<UserDto> getListDto(List<User> userList) {
         List<UserDto> userDtos = new LinkedList<>();
         for (User user : userList) {
             UserDto userDto = new UserDto();
-            BeanUtils.copyProperties(user,userDto);
-            userDtos.add(userDto);
+            BeanUtils.copyProperties( user, userDto );
+            userDtos.add( userDto );
         }
         return userDtos;
     }
