@@ -30,6 +30,6 @@ public class Global {
 
     public static final String TOKEN = "token";
 
-
+    public static final String JWT_SECRET="dsfjoi329fslkdfisf./kfd";
 
 }

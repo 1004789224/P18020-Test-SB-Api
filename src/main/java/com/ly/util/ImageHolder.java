@@ -13,10 +13,21 @@ public class ImageHolder {
 
     private InputStream fileInputStream;
     private String fileName;
+    private Class clz;
 
-    public ImageHolder(InputStream fileInputStream, String fileName) {
+    public ImageHolder(InputStream fileInputStream, String fileName, Class clz) {
         this.fileInputStream = fileInputStream;
         this.fileName = fileName;
+        this.clz = clz;
+    }
+
+    public Class getClz() {
+
+        return clz;
+    }
+
+    public void setClz(Class clz) {
+        this.clz = clz;
     }
 
     public InputStream getFileInputStream() {

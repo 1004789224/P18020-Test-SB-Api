@@ -91,7 +91,7 @@ public enum ErrorCode {
     /**
      * 保存数据失败
      */
-    SAVE_FAIL("800116", "Gagal untuk menyimpan data!"),
+    SAVE_FAIL("800116", "保存数据失败!"),
 
     BANK_FAIL("800117","Silakan isi rekening bank yang tepat!"),
 
@@ -177,6 +177,7 @@ public enum ErrorCode {
 
     UPDATEERROR( "100119", "更新用户信息失败" ),
     SAMEPASSWORD( "100120", "重复的密码!" ),
+    FILEUPLOADERROR( "100121", "获取文件流对象失败" )
     ;
 
 

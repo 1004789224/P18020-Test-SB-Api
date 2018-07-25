@@ -27,7 +27,7 @@ public interface UserService {
      * @param updateVo
      * @return
      */
-    Long updateUser(UserUpdateVo updateVo, ImageHolder imageHolder);
+    UserDto updateUser(UserUpdateVo updateVo);
 
     Long del(Long id);
 

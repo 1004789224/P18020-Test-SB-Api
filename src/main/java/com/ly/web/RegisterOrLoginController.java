@@ -30,7 +30,6 @@ public class RegisterOrLoginController {
     private UserService userService;
 
     /**
-     * TODO 从前台获取用户信息 先验证图片验证码是否正确
      * TODO 调用SMSService来获验证前台传来得短信验证码
      *
      * @return

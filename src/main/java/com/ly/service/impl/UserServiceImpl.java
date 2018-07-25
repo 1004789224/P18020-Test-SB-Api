@@ -92,21 +92,23 @@ public class UserServiceImpl implements UserService {
     /**
      * @param userVo 包含老密码,新密码 以及用户id
      *               用户Id在controller中调用JWTService获取
-     *              TODO 在controller中需验证 新老密码不相同
      * @return
      */
     @Override
     public Long modifyPassword(ModifyUserVo userVo) {
-        Optional<User> user = userRepository.findById( userVo.getId() );
+        User user = userRepository.findById( userVo.getId() ).orElse( null );
         String salt;
-        if (user.get() != null) {
-            salt = user.get().getSalt();
+        if (user != null) {
+            salt = user.getSalt();
             int i = userRepository.updatePassword(
                     userVo.getId(),
                     MD5Util.getMD5String( userVo.getOldPassword() + salt ),
                     MD5Util.getMD5String( userVo.getNewPassword() + salt ),
                     new Date() );
-            return i == 1 ? 1L : 0L;
+            if (i != 1) {
+                throw new RuntimeException( "修改密码失败,请检查远密码是否正确" );
+            }
+            return 1L;
         } else {
             return 0L;
         }
@@ -169,26 +171,44 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     @Override
-    public Long updateUser(UserUpdateVo updateVo, ImageHolder imageHolder) {
+    public UserDto updateUser(UserUpdateVo updateVo) {
+
         User user = userRepository.findById( updateVo.getId() ).orElse( null );
-        if (imageHolder != null && imageHolder.getFileInputStream() != null
-                && imageHolder.getFileName() != null) {
-            if (user.getImgUrl() != null) {
-                ImageUtil.deleteFileOrPath( user.getImgUrl() );
-            }
-            String targetDir = PathUtil.getTypeImgagePath( User.class );
-            String image = ImageUtil.saveImage( imageHolder, targetDir );
-            updateVo.setImgUrl( image );
-        }
         if (user == null) {
-            return 0L;
+            return null;
         }
-        BeanUtils.copyProperties( updateVo, user );
-        user.setGmtModified( new Date() );
-        return userRepository.save( user ) == null ? 0L : 1L;
+        //当前用户修改图片  即数据库中本来有图片,用户仍然上传了图片,则删除本地原来的图片
+        if (user.getImgUrl() != null&&updateVo.getImgUrl()!=null) {
+            ImageUtil.deleteFileOrPath( user.getImgUrl() );
+        }
+        if (StringUtils.hasText( updateVo.getName() ))
+
+        {
+            user.setName( updateVo.getName() );
+        }
+        //TODO 上线时删除
+        if (StringUtils.hasText( updateVo.getIdnumber() ))
+
+        {
+            user.setIdnumber( updateVo.getIdnumber() );
+        }
+        if ( StringUtils.hasText( updateVo.getImgUrl() )) {
+            user.setImgUrl( updateVo.getImgUrl() );
+        }
+        user.setGmtModified( new
+
+                Date() );
+        if (userRepository.save( user ) == null)
+        {
+            return null;
+        } else
+        {
+            UserDto userDto = new UserDto();
+            BeanUtils.copyProperties( user, userDto );
+            return userDto;
+        }
 
     }
-
     @Override
     public UserVo findUser(Long id) {
         User user = userRepository.findById( id ).orElse( null );
@@ -199,7 +219,6 @@ public class UserServiceImpl implements UserService {
         }
         return null;
     }
-
     /**
      * @param userVo
      * @return

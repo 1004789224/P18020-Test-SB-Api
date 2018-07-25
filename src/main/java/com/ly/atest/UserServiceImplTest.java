@@ -1,5 +1,7 @@
 package com.ly.atest;
 
+import com.ly.domain.User;
+import com.ly.service.FileService;
 import com.ly.service.UserService;
 import com.ly.util.ImageHolder;
 import com.ly.vo.form.ModifyUserVo;
@@ -26,6 +28,8 @@ public class UserServiceImplTest extends MyTest {
 
     @Autowired
     UserService userService;
+    @Autowired
+    FileService fileService;
     @Test
     public void del() {
         System.out.println( userService.del( 6L ) );
@@ -61,12 +65,15 @@ public class UserServiceImplTest extends MyTest {
         userVo.setIdnumber( "512659199601156585" );
         InputStream inputStream =
                 new FileInputStream( "D:\\Is\\upload\\images\\User" +
-                        "\\2018072410253538515.jpg" );
-        String fileName = "2018072410253538515.jpg";
-        ImageHolder imageHolder = new ImageHolder(inputStream,fileName);
+                        "\\2018072515204267299.jpg" );
+        String fileName = "2018072515204267299.jpg";
+        ImageHolder imageHolder = new ImageHolder(inputStream,fileName,User.class );
+        String path = fileService.uploadToDisk( imageHolder );
+        System.out.println(path);
         UserUpdateVo updateVo = new UserUpdateVo();
         BeanUtils.copyProperties( userVo, updateVo );
-        userService.updateUser(updateVo,imageHolder);
+        updateVo.setImgUrl( path );
+        userService.updateUser(updateVo);
     }
 
     @Test
