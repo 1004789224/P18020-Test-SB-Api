@@ -1,5 +1,6 @@
 package com.ly.vo.form;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -19,9 +20,9 @@ public class ModifyUserVo {
         this.id = id;
     }
 
-    @NotNull(message = "原密码不得为空")
+    @NotBlank(message = "原密码不得为空")
     private String oldPassword;
-    @NotNull(message = "新密码不得为空")
+    @NotBlank(message = "新密码不得为空")
     private String newPassword;
 
     public String getOldPassword() {

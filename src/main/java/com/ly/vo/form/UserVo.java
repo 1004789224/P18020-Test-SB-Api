@@ -3,6 +3,7 @@ package com.ly.vo.form;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.util.Date;
@@ -15,11 +16,11 @@ public class UserVo {
 
     private Long id;
     @Pattern(regexp = "^1(3|4|5|7|8)\\d{9}$",message = "手机号码格式错误")
-    @NotNull(message = "手机号码不能为空")
+    @NotBlank(message = "手机号码不能为空")
     private String phone;
     private String idnumber;
     private String name;
-    @NotNull(message = "密码不能为空")
+    @NotBlank(message = "密码不能为空")
     private String password;
 
     private String imgUrl;
