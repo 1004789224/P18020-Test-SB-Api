@@ -74,7 +74,7 @@ public class UserController {
     @PostMapping("modifypwd")
     @AopLog
     public Result modifyPassword(@RequestBody @Valid ModifyUserVo userVo, BindingResult bindingResult) {
-        //todo 从token中拿到user信息 将user的id取出来付给userVo
+        //todo 从token中拿到user信息 将user的id取出来付给userVo 测试时直接输入id
         if (userVo.getNewPassword().equals( userVo.getOldPassword() )) {
             return new Result( ErrorCode.SAMEPASSWORD );
         }

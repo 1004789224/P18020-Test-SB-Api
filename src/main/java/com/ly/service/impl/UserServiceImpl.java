@@ -106,7 +106,7 @@ public class UserServiceImpl implements UserService {
                     MD5Util.getMD5String( userVo.getNewPassword() + salt ),
                     new Date() );
             if (i != 1) {
-                throw new RuntimeException( "修改密码失败,请检查远密码是否正确" );
+                throw new RuntimeException( "修改密码失败,请检查原密码是否正确" );
             }
             return 1L;
         } else {
