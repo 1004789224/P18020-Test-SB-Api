@@ -1,39 +1,29 @@
 package com.ly.web;
 
+import com.ly.Global;
 import com.ly.anon.AopLog;
-import com.ly.domain.User;
 import com.ly.dto.UserDto;
 import com.ly.helper.ErrorCode;
 import com.ly.helper.Result;
 import com.ly.helper.ResultHelper;
+import com.ly.service.JwtService;
 import com.ly.service.UserService;
 
-import com.ly.util.ImageHolder;
-import com.ly.util.ImageUtil;
-import com.ly.util.PathUtil;
 import com.ly.vo.form.ModifyUserVo;
-import com.ly.vo.form.UserVo;
 import com.ly.vo.query.UserQueryVo;
 import com.ly.vo.IdReqVo;
+import com.ly.vo.rsp.UserJwtToken;
 import com.ly.vo.update.UserUpdateVo;
-import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
-import org.springframework.web.multipart.MultipartResolver;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 @RestController
 @RequestMapping(value = "/v1/user")
@@ -43,6 +33,8 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    JwtService jwtService;
     private static Logger log = LoggerFactory.getLogger( UserController.class );
 
     @AopLog
@@ -62,22 +54,37 @@ public class UserController {
 
     @PostMapping("updateuser")
     @AopLog
-    public Result updeteUser(
+    public Result updeteUser(HttpServletRequest request,
+                             HttpServletResponse res,
                              @RequestBody @Valid UserUpdateVo updateVo,
                              BindingResult bindingResult
-                          ) {
+    ) {
+        String token = request.getHeader( Global.TOKEN );
+        UserJwtToken userJwtToken = (UserJwtToken) jwtService.getOneObject( token, UserJwtToken.class );
+        if (null == userJwtToken || userJwtToken.getId() == null || userJwtToken.getId() > 0) {
+            return new Result(ErrorCode.SESSION_EXPIRE);
+        }
+        updateVo.setId( userJwtToken.getId() );
         UserDto userDto = userService.updateUser( updateVo );
-        log.debug( "返回的Dto:" + userDto );
+        UserJwtToken newToken = new UserJwtToken();
+        BeanUtils.copyProperties( userDto, newToken );
+        String tokenStr = jwtService.getTokenStr( newToken );
+        res.setHeader( Global.TOKEN, tokenStr );
         return new Result().setData( userDto );
     }
 
     @PostMapping("modifypwd")
     @AopLog
-    public Result modifyPassword(@RequestBody @Valid ModifyUserVo userVo, BindingResult bindingResult) {
-        //todo 从token中拿到user信息 将user的id取出来付给userVo 测试时直接输入id
+    public Result modifyPassword(HttpServletRequest request, @RequestBody @Valid ModifyUserVo userVo, BindingResult bindingResult) {
         if (userVo.getNewPassword().equals( userVo.getOldPassword() )) {
-            return new Result( ErrorCode.SAMEPASSWORD );
+            return new Result( ErrorCode.SAME_PASSWORD );
         }
+        String token = request.getHeader( Global.TOKEN );
+        UserJwtToken userJwtToken = (UserJwtToken) jwtService.getOneObject( token, UserJwtToken.class );
+        if (null == userJwtToken || userJwtToken.getId() == null || userJwtToken.getId() <= 0) {
+            return new Result(ErrorCode.SESSION_EXPIRE);
+        }
+        userVo.setId( userJwtToken.getId() );
         final Long isOk = userService.modifyPassword( userVo );
         return ResultHelper.saveResult( isOk );
     }

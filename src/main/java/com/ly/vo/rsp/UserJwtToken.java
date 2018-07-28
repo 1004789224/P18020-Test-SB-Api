@@ -3,20 +3,13 @@ package com.ly.vo.rsp;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-public class UserInfoRspVo {
+public class UserJwtToken {
     private String phone;
 
     private String name;
 
-    private String imgUrl;
+    private Long id;
 
-    public String getImgUrl() {
-        return imgUrl;
-    }
-
-    public void setImgUrl(String imgUrl) {
-        this.imgUrl = imgUrl;
-    }
 
     public Long getId() {
         return id;
@@ -25,8 +18,6 @@ public class UserInfoRspVo {
     public void setId(Long id) {
         this.id = id;
     }
-
-    private Long id;
 
     public String getPhone() {
         return phone;

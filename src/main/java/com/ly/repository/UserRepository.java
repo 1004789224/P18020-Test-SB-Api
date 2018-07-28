@@ -27,9 +27,8 @@ public interface UserRepository extends PagingAndSortingRepository<User, Long>,
     @Transactional
     @Modifying
     @Query("update user set password= :newPassword,gmtModified=:gmtModified " +
-            "where id= :id and password= :oldPassword")
+            "where id= :id")
     int updatePassword(@Param("id") Long id,
-                       @Param("oldPassword") String oldPassword,
                        @Param("newPassword") String newPassword,
                        @Param("gmtModified") Date gmtModified);
 

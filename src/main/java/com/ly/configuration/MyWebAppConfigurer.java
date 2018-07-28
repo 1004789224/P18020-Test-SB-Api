@@ -21,20 +21,20 @@ public class MyWebAppConfigurer extends WebMvcConfigurerAdapter {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         // 多个拦截器组成一个拦截器链
-        registry.addInterceptor(webInterceptor()).addPathPatterns("/**")
-                .excludePathPatterns("/v1/login/**")
-        .excludePathPatterns( "/v1/register/**" );
-        super.addInterceptors(registry);
+        registry.addInterceptor( webInterceptor() ).addPathPatterns( "/**" )
+                .excludePathPatterns( "/v1/login/**" )
+                .excludePathPatterns( "/v1/register/**" );
+        super.addInterceptors( registry );
     }
 
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("swagger-ui.html")
-                .addResourceLocations("classpath:/META-INF/resources/");
+        registry.addResourceHandler( "swagger-ui.html" )
+                .addResourceLocations( "classpath:/META-INF/resources/" );
 
-        registry.addResourceHandler("/webjars/**")
-                .addResourceLocations("classpath:/META-INF/resources/webjars/");
+        registry.addResourceHandler( "/webjars/**" )
+                .addResourceLocations( "classpath:/META-INF/resources/webjars/" );
     }
 
 }

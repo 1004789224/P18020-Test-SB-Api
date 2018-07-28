@@ -16,11 +16,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class MyTest {
     @Before
     public void init() {
-        System.out.println( "=====测试开始======" );
+        System.out.println( "=====测试开始=====" );
     }
 
     @After
     public void end() {
-        System.out.println( "======测试结束======" );
+        System.out.println( "=====测试结束=====" );
     }
 }
