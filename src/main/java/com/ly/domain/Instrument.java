@@ -64,6 +64,7 @@ public class Instrument implements java.io.Serializable{
 
     private Long isDeleted;
 
+
     public Long getId() {
         return id;
     }

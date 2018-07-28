@@ -52,7 +52,6 @@ public class InstrumentServiceImpl implements InstrumentService {
             where.and(QInstrument.instrument.name.like(Expressions.asString("%").concat(instrumentQueryVo.getName()).concat("%")));
         }
 
-
         if (instrumentQueryVo.getGroupId() != null && instrumentQueryVo.getGroupId() > 0 ) {
             where.and(QInstrument.instrument.groupId.eq(instrumentQueryVo.getGroupId().longValue()));
         }

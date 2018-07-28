@@ -24,4 +24,5 @@ public interface SmsCodeService {
 
     List<SmsCodeDto> listSmsCode();
 
+    Boolean checkSmsCode(String phone, String code);
 }
