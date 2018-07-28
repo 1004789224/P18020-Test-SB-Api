@@ -20,9 +20,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class SmsCodeServiceImpl implements SmsCodeService {
@@ -63,6 +66,12 @@ public class SmsCodeServiceImpl implements SmsCodeService {
     }
 
     @Override
+    public Boolean checkSmsCode(String phone, String code) {
+
+        return false;
+    }
+
+    @Override
     public SmsCodeVo findSmsCode(Long id) {
         SmsCode smsCode = smsCodeRepository.findById(id).orElse(null);
         SmsCodeVo smsCodeVo = new SmsCodeVo();
@@ -76,7 +85,8 @@ public class SmsCodeServiceImpl implements SmsCodeService {
     @Override
     public Long saveSmsCode(SmsCodeVo smsCodeVo) {
         SmsCode smsCode = new SmsCode();
-        BeanUtils.copyProperties(smsCodeVo, smsCode);        
+        BeanUtils.copyProperties(smsCodeVo, smsCode);
+        smsCode.setIsUsed( 0L );
         smsCode.setIsDeleted(0L);
         smsCode.setGmtCreate(new Date());
         smsCode.setGmtModified(new Date());
