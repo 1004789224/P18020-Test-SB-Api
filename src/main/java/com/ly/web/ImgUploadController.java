@@ -38,7 +38,6 @@ public class ImgUploadController {
                 imageHolder = new ImageHolder( imgFile.getInputStream(), imgFile.getOriginalFilename(), User.class );
             } catch (IOException e) {
                 e.printStackTrace();
-                throw new AppException( ErrorCode.FILEUPLOADERROR );
             }
         }
         String relativePath = fileService.uploadToDisk( imageHolder );

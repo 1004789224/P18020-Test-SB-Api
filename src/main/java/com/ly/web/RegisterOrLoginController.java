@@ -1,20 +1,24 @@
 package com.ly.web;
 
+import com.ly.Global;
 import com.ly.anon.AopLog;
-import com.ly.domain.User;
 import com.ly.dto.UserDto;
 import com.ly.helper.ErrorCode;
 import com.ly.helper.Result;
 import com.ly.helper.ResultHelper;
+import com.ly.service.JwtService;
 import com.ly.service.UserService;
 import com.ly.util.VerificationUtil;
 import com.ly.vo.form.UserRegisterVo;
 import com.ly.vo.form.UserVo;
+import com.ly.vo.rsp.UserJwtToken;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 /**
@@ -28,6 +32,8 @@ import javax.validation.Valid;
 public class RegisterOrLoginController {
     @Autowired
     private UserService userService;
+    @Autowired
+    private JwtService jwtService;
 
     /**
      * TODO 调用SMSService来获验证前台传来得短信验证码
@@ -37,13 +43,22 @@ public class RegisterOrLoginController {
     @AopLog
     @PostMapping("register")
     public Result register(HttpServletRequest req,
+                           HttpServletResponse res,
                            @RequestBody @Valid UserRegisterVo registerVo,
-                           BindingResult bindingResult, String vrifyCode) {
+                           BindingResult bindingResult,
+                           String vrifyCode) {
         if (!VerificationUtil.VerificationCode( req, vrifyCode )) {
             return ResultHelper.VerificationHelp();
         }
-        Long isOk = userService.saveUser( registerVo );
-        return ResultHelper.saveResult( isOk );
+        UserDto userDto = userService.saveUser( registerVo );
+        if (userDto != null) {
+            UserJwtToken userJwtToken = new UserJwtToken();
+            BeanUtils.copyProperties( userDto, userJwtToken );
+            String tokenStr = jwtService.getTokenStr( userJwtToken );
+            res.setHeader( Global.TOKEN, tokenStr );
+            return new Result().setData( userDto );
+        }
+        return new Result(ErrorCode.INNER_WRONG);
     }
 
     /**
@@ -58,9 +73,15 @@ public class RegisterOrLoginController {
 
     @PostMapping("login")
     @AopLog
-    public Result login(@RequestBody @Valid UserVo userVo, BindingResult bindingResult) {
+    public Result login(HttpServletResponse res, @RequestBody @Valid UserVo userVo, BindingResult bindingResult) {
         UserDto userDto = userService.login( userVo );
-        return userDto==null?new Result(ErrorCode. WRONGPHONEORPWD):
-                new Result(  ).setData( userDto );
+        if (userDto != null) {
+            UserJwtToken userJwtToken = new UserJwtToken();
+            BeanUtils.copyProperties( userDto, userJwtToken );
+            String tokenStr = jwtService.getTokenStr( userJwtToken );
+            res.setHeader( Global.TOKEN, tokenStr );
+            return new Result().setData( userDto );
+        }
+        return new Result(ErrorCode.WRONG_PHONE_OR_PWD );
     }
 }

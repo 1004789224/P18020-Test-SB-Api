@@ -10,16 +10,16 @@ public enum ErrorCode {
     /**
      * 会话已过期，请重新登录
      */
-    SESSION_EXPIRE("800101", "Sesi telah berakhir, silahkan login lagi"),
+    SESSION_EXPIRE("800101", "会话已过期，请重新登录"),
     /**
      * 请求参数有误
      */
-    PARAMETER_ERROR("800102", "parameter kesalahan"),
+    PARAMETER_ERROR("800102", "请求参数有误"),
 
     /**
      * 创建fav失败
      */
-    CREATE_FAV_FAIL("800103", "Gagal membuat FAV!"),
+    CREATE_FAV_FAIL("800103", "创建fav失败"),
 
     /**
      * 创建fav失败
@@ -29,7 +29,7 @@ public enum ErrorCode {
     /**
      * FAV已经创建
      */
-    FAV_ALREADY_CREATE("800104", "FAV telah dibuat!"),
+    FAV_ALREADY_CREATE("800104", "FAV已经创建"),
 
     /**
      * FAV已经创建
@@ -173,11 +173,11 @@ public enum ErrorCode {
      */
     ACCOUNT_ACTION("100117", " Akun telah diaktifkan"),
 
-    WRONGPHONEORPWD("100118","账号无效或密码错误"),
+    WRONG_PHONE_OR_PWD("100118","账号无效或密码错误"),
 
-    UPDATEERROR( "100119", "更新用户信息失败" ),
-    SAMEPASSWORD( "100120", "重复的密码!" ),
-    FILEUPLOADERROR( "100121", "获取文件流对象失败" )
+    UPDATE_ERROR( "100119", "更新用户信息失败" ),
+    SAME_PASSWORD( "100120", "重复的密码!" ),
+    INNER_WRONG( "100121", "内部错误!" )
     ;
 
 

@@ -7,12 +7,13 @@ import com.ly.helper.MyPage;
 import com.ly.model.UserM;
 import com.ly.repository.UserRepository;
 import com.ly.service.UserService;
-import com.ly.util.*;
+import com.ly.util.ImageUtil;
+import com.ly.util.MD5Util;
+import com.ly.util.Random4CharUtil;
 import com.ly.vo.form.ModifyUserVo;
 import com.ly.vo.form.UserRegisterVo;
-import com.ly.vo.query.UserQueryVo;
 import com.ly.vo.form.UserVo;
-import com.ly.vo.rsp.UserInfoRspVo;
+import com.ly.vo.query.UserQueryVo;
 import com.ly.vo.update.UserUpdateVo;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.Expressions;
@@ -25,20 +26,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
-
 
     private static Logger log = LoggerFactory.getLogger( UserServiceImpl.class );
     @Autowired
@@ -100,17 +95,26 @@ public class UserServiceImpl implements UserService {
         String salt;
         if (user != null) {
             salt = user.getSalt();
+            StringBuilder saltPwd = new StringBuilder();
+            String oldPassword = (MD5Util.getMD5String( new StringBuilder()
+                    .append( userVo.getOldPassword() )
+                    .append( salt ).toString()));
+            if (!oldPassword.equals( user.getPassword() )) {
+                throw  new RuntimeException( "原密码输入错误!" );
+            }
             int i = userRepository.updatePassword(
                     userVo.getId(),
-                    MD5Util.getMD5String( userVo.getOldPassword() + salt ),
-                    MD5Util.getMD5String( userVo.getNewPassword() + salt ),
+                    MD5Util.getMD5String( new StringBuilder()
+                            .append( userVo.getNewPassword() )
+                            .append( salt )
+                            .toString() ),
                     new Date() );
-            if (i != 1) {
-                throw new RuntimeException( "修改密码失败,请检查原密码是否正确" );
+            if (i < 1) {
+                throw new RuntimeException( "系统错误!" );
             }
             return 1L;
         } else {
-            return 0L;
+            throw new RuntimeException( "非法操作!" );
         }
     }
 
@@ -121,21 +125,29 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     @Override
-    public Long saveUser(UserRegisterVo registerVo) {
+    public UserDto saveUser(UserRegisterVo registerVo) {
+        if (null == registerVo) {
+            return null;
+        }
         User user = new User();
         BeanUtils.copyProperties( registerVo, user );
+        StringBuilder saltPwd = new StringBuilder();
         String saltCode = Random4CharUtil.getSaltCode();
         user.setIsDeleted( 0L );
         user.setSalt( saltCode );
-        user.setPassword( MD5Util.getMD5String( user.getPassword() + saltCode ) );
+        user.setPassword( MD5Util
+                .getMD5String( saltPwd.append( user.getPassword() )
+                        .append( saltCode )
+                        .toString() ) );
         user.setGmtCreate( new Date() );
         user.setGmtModified( new Date() );
-        return userRepository.save( user ) == null ? 0L : 1L;
+        User save = userRepository.save( user );
+        UserDto userDto = new UserDto();
+        BeanUtils.copyProperties( save, userDto );
+        return userDto;
     }
 
     /**
-     * TODO 引入JWT 给 客户端发送token
-     *
      * @param userVo
      * @return
      */
@@ -153,11 +165,11 @@ public class UserServiceImpl implements UserService {
                         + byPhone.getSalt() ) )
         );
         where.and( QUser.user.isDeleted.ne( 1L ) );
-        Optional<User> user = userRepository.findOne( where );
-        log.debug( "ServiceLogin得到的User:" + user.toString() );
-        if (user.get() != null) {
+        User user = userRepository.findOne( where ).orElse( null );
+        if (user != null) {
+            log.debug( "ServiceLogin得到的User:" + user.toString() );
             UserDto userDto = new UserDto();
-            BeanUtils.copyProperties( user.get(), userDto );
+            BeanUtils.copyProperties( user, userDto );
             return userDto;
         } else {
             return null;
@@ -178,37 +190,30 @@ public class UserServiceImpl implements UserService {
             return null;
         }
         //当前用户修改图片  即数据库中本来有图片,用户仍然上传了图片,则删除本地原来的图片
-        if (user.getImgUrl() != null&&updateVo.getImgUrl()!=null) {
+        if (user.getImgUrl() != null && updateVo.getImgUrl() != null) {
             ImageUtil.deleteFileOrPath( user.getImgUrl() );
         }
-        if (StringUtils.hasText( updateVo.getName() ))
-
-        {
+        if (StringUtils.hasText( updateVo.getName() )) {
             user.setName( updateVo.getName() );
         }
-        //TODO 上线时删除
-        if (StringUtils.hasText( updateVo.getIdnumber() ))
-
-        {
+        //TODO 引入token后在token中判断是否有idnumber 有则不允许删改,前台在用户修改界面应该没有idnumber的输入框 idnumber只允许输入一次
+        if (StringUtils.hasText( updateVo.getIdnumber() )) {
             user.setIdnumber( updateVo.getIdnumber() );
         }
-        if ( StringUtils.hasText( updateVo.getImgUrl() )) {
+        if (StringUtils.hasText( updateVo.getImgUrl() )) {
             user.setImgUrl( updateVo.getImgUrl() );
         }
-        user.setGmtModified( new
-
-                Date() );
-        if (userRepository.save( user ) == null)
-        {
+        user.setGmtModified( new Date() );
+        if (userRepository.save( user ) == null) {
             return null;
-        } else
-        {
+        } else {
             UserDto userDto = new UserDto();
             BeanUtils.copyProperties( user, userDto );
             return userDto;
         }
 
     }
+
     @Override
     public UserVo findUser(Long id) {
         User user = userRepository.findById( id ).orElse( null );
@@ -219,6 +224,7 @@ public class UserServiceImpl implements UserService {
         }
         return null;
     }
+
     /**
      * @param userVo
      * @return

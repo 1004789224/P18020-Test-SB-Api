@@ -8,7 +8,6 @@ import com.ly.vo.form.ModifyUserVo;
 import com.ly.vo.form.UserRegisterVo;
 import com.ly.vo.query.UserQueryVo;
 import com.ly.vo.form.UserVo;
-import com.ly.vo.rsp.UserInfoRspVo;
 import com.ly.vo.update.UserUpdateVo;
 
 import java.util.List;
@@ -41,7 +40,7 @@ public interface UserService {
      * @param registerVo
      * @return
      */
-    Long saveUser(UserRegisterVo registerVo);
+    UserDto saveUser(UserRegisterVo registerVo);
 
     /**
      * 根据phone和密码进行登陆
