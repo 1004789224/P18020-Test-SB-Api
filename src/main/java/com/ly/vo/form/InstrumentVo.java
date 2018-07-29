@@ -3,8 +3,6 @@ package com.ly.vo.form;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 /**
@@ -14,34 +12,35 @@ import java.util.Date;
 public class InstrumentVo {
 
     private Long id;
-    @NotNull(message = "分类不可为空")
+
     private Long categroyId;
-    @NotNull(message = "服务方式不可为空")
+
     private Long serviceMethodId;
-    @NotBlank(message = "编码不能为空")
+
     private String code;
-    @NotBlank(message = "姓名不能为空")
+
     private String name;
-    @NotBlank(message = "型号不能为空")
+
     private String modelNum;
-    @NotNull(message = "")
+
     private Long groupId;
-    @NotBlank(message = "放置地址不能为空")
+
     private String place;
-    @NotBlank(message = "产地不能为空")
+
     private String origin;
-    @NotBlank(message = "生产厂家不能为空")
+
     private String vender;
-    @NotNull(message = "出厂时间不能为空")
+
     private Date productionDate;
+
     private Date acquisitionDate;
 
     private String technicalIndex;
 
     private String technicalTeam;
-    @NotBlank(message = "功能特点不能为空")
+
     private String features;
-    @NotBlank(message = "仪器图片不能为空")
+
     private String imgUrl;
 
     private Long oredernum;
@@ -184,6 +183,6 @@ public class InstrumentVo {
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString( this, ToStringStyle.SHORT_PREFIX_STYLE );
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 }
