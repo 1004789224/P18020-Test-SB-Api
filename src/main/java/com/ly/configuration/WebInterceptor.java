@@ -33,14 +33,13 @@ public class WebInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request,
                              HttpServletResponse response, Object handler) throws Exception {
 
-        String token = request.getHeader("token");
+        String token = (String) request.getHeader(Global.TOKEN);
+        LOGGER.debug( "token:" + token );
         if (!StringUtils.hasText(token)) {
             this.rtnResponse(response);
             return false;
         } else {
-            jwtService.getOneObject( token, UserJwtToken.class );
-
-            Long userId = 1L;
+            Long userId = jwtService.getUserIdFromToken(token);
             if (userId > 0){
                 request.setAttribute(Global.USER_ID,userId);
             }else{

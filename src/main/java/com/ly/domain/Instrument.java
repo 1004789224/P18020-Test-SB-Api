@@ -64,6 +64,15 @@ public class Instrument implements java.io.Serializable{
 
     private Long isDeleted;
 
+    private String state;
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
 
     public Long getId() {
         return id;

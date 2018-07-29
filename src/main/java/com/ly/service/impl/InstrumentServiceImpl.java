@@ -55,7 +55,9 @@ public class InstrumentServiceImpl implements InstrumentService {
         if (instrumentQueryVo.getGroupId() != null && instrumentQueryVo.getGroupId() > 0 ) {
             where.and(QInstrument.instrument.groupId.eq(instrumentQueryVo.getGroupId().longValue()));
         }
-
+        if (StringUtils.hasText( instrumentQueryVo.getState() )) {
+            where.and( QInstrument.instrument.state.eq( instrumentQueryVo.getState() ) );
+        }
         Sort sort = new Sort(Sort.Direction.ASC, InstrumentM.ID);
         Pageable page = PageRequest.of(instrumentQueryVo.getNumber(), instrumentQueryVo.getSize(), sort);
         Page<Instrument> componentPage = instrumentRepository.findAll(where, page);

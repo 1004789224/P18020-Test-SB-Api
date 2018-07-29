@@ -3,6 +3,8 @@ package com.ly.vo.form;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 /**
@@ -12,19 +14,19 @@ import java.util.Date;
 public class InstrumentVo {
 
     private Long id;
-
+    @NotNull(message = "请输入完整")
     private Long categroyId;
-
+    @NotNull(message = "请输入完整")
     private Long serviceMethodId;
 
     private String code;
-
+    @NotBlank
     private String name;
 
     private String modelNum;
-
+    //TODO
     private Long groupId;
-
+    @NotBlank(message = "请输入地址")
     private String place;
 
     private String origin;
@@ -45,6 +47,15 @@ public class InstrumentVo {
 
     private Long oredernum;
 
+    private String state;
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
     public Long getId() {
         return id;
     }

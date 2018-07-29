@@ -3,9 +3,12 @@ package com.ly.service.impl;
 import com.ly.domain.QUser;
 import com.ly.domain.User;
 import com.ly.dto.UserDto;
+import com.ly.helper.AppException;
+import com.ly.helper.ErrorCode;
 import com.ly.helper.MyPage;
 import com.ly.model.UserM;
 import com.ly.repository.UserRepository;
+import com.ly.service.JwtService;
 import com.ly.service.UserService;
 import com.ly.util.ImageUtil;
 import com.ly.util.MD5Util;
@@ -38,7 +41,8 @@ public class UserServiceImpl implements UserService {
     private static Logger log = LoggerFactory.getLogger( UserServiceImpl.class );
     @Autowired
     private UserRepository userRepository;
-
+    @Autowired
+    JwtService jwtService;
     @Override
     public MyPage<UserDto> listPage(UserQueryVo userQueryVo) {
         BooleanBuilder where = new BooleanBuilder();
@@ -78,6 +82,7 @@ public class UserServiceImpl implements UserService {
             user.setIsDeleted( 1L );
             if (user.getImgUrl() != null) {
                 ImageUtil.deleteFileOrPath( user.getImgUrl() );
+                //TODO 设置为本地默认图片
                 user.setImgUrl( " " );
             }
         }
@@ -90,17 +95,15 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     @Override
-    public Long modifyPassword(ModifyUserVo userVo) {
+    public Long modifyPassword(ModifyUserVo userVo)  {
         User user = userRepository.findById( userVo.getId() ).orElse( null );
         String salt;
         if (user != null) {
             salt = user.getSalt();
             StringBuilder saltPwd = new StringBuilder();
-            String oldPassword = (MD5Util.getMD5String( new StringBuilder()
-                    .append( userVo.getOldPassword() )
-                    .append( salt ).toString()));
+            String oldPassword = (MD5Util.getMD5String( userVo.getOldPassword()+salt));
             if (!oldPassword.equals( user.getPassword() )) {
-                throw  new RuntimeException( "原密码输入错误!" );
+                return 0L;
             }
             int i = userRepository.updatePassword(
                     userVo.getId(),
@@ -108,13 +111,14 @@ public class UserServiceImpl implements UserService {
                             .append( userVo.getNewPassword() )
                             .append( salt )
                             .toString() ),
+
                     new Date() );
             if (i < 1) {
-                throw new RuntimeException( "系统错误!" );
+                return 0L;
             }
             return 1L;
         } else {
-            throw new RuntimeException( "非法操作!" );
+            return 0L;
         }
     }
 
@@ -167,7 +171,6 @@ public class UserServiceImpl implements UserService {
         where.and( QUser.user.isDeleted.ne( 1L ) );
         User user = userRepository.findOne( where ).orElse( null );
         if (user != null) {
-            log.debug( "ServiceLogin得到的User:" + user.toString() );
             UserDto userDto = new UserDto();
             BeanUtils.copyProperties( user, userDto );
             return userDto;

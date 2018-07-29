@@ -1,6 +1,7 @@
 package com.ly.web;
 
 import com.ly.anon.AopLog;
+import com.ly.domain.Instrument;
 import com.ly.domain.User;
 import com.ly.helper.AppException;
 import com.ly.helper.ErrorCode;
@@ -28,14 +29,27 @@ import java.util.HashMap;
 public class ImgUploadController {
     @Autowired
     FileService fileService;
-
     @AopLog
-    @PostMapping("upload")
-    public Result uploadUserImgFile(@RequestParam("imgFile") MultipartFile imgFile) throws AppException {
+    @PostMapping("userupload")
+    public Result uploadUserImgFile(@RequestParam("userImgFile") MultipartFile imgFile) throws AppException {
         ImageHolder imageHolder = null;
         if (null != imgFile && !imgFile.isEmpty()) {
             try {
                 imageHolder = new ImageHolder( imgFile.getInputStream(), imgFile.getOriginalFilename(), User.class );
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        String relativePath = fileService.uploadToDisk( imageHolder );
+        return new Result().setData( relativePath );
+    }
+    @AopLog
+    @PostMapping("instrumentupload")
+    public Result uploadInstrumentImgFile(@RequestParam("instrumentImgFile") MultipartFile imgFile) throws AppException {
+        ImageHolder imageHolder = null;
+        if (null != imgFile && !imgFile.isEmpty()) {
+            try {
+                imageHolder = new ImageHolder( imgFile.getInputStream(), imgFile.getOriginalFilename(), Instrument.class );
             } catch (IOException e) {
                 e.printStackTrace();
             }

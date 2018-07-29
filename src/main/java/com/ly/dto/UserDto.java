@@ -15,7 +15,6 @@ public class UserDto {
 
     private String phone;
 
-    private String idnumber;
 
     private String name;
 
@@ -37,13 +36,6 @@ public class UserDto {
         this.phone = phone;
     }
 
-    public String getIdnumber() {
-        return idnumber;
-    }
-
-    public void setIdnumber(String idnumber) {
-        this.idnumber = idnumber;
-    }
 
     public String getName() {
         return name;

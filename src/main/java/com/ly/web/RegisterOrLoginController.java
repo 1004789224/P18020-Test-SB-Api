@@ -48,14 +48,11 @@ public class RegisterOrLoginController {
                            BindingResult bindingResult,
                            String vrifyCode) {
         if (!VerificationUtil.VerificationCode( req, vrifyCode )) {
-            return ResultHelper.VerificationHelp();
+            return new Result( ErrorCode.CODE_IS_ERROR );
         }
         UserDto userDto = userService.saveUser( registerVo );
         if (userDto != null) {
-            UserJwtToken userJwtToken = new UserJwtToken();
-            BeanUtils.copyProperties( userDto, userJwtToken );
-            String tokenStr = jwtService.getTokenStr( userJwtToken );
-            res.setHeader( Global.TOKEN, tokenStr );
+            res.setHeader( Global.TOKEN,  jwtService.getTokenStr( userDto ) );
             return new Result().setData( userDto );
         }
         return new Result(ErrorCode.INNER_WRONG);
@@ -76,10 +73,7 @@ public class RegisterOrLoginController {
     public Result login(HttpServletResponse res, @RequestBody @Valid UserVo userVo, BindingResult bindingResult) {
         UserDto userDto = userService.login( userVo );
         if (userDto != null) {
-            UserJwtToken userJwtToken = new UserJwtToken();
-            BeanUtils.copyProperties( userDto, userJwtToken );
-            String tokenStr = jwtService.getTokenStr( userJwtToken );
-            res.setHeader( Global.TOKEN, tokenStr );
+            res.setHeader( Global.TOKEN, jwtService.getTokenStr( userDto ) );
             return new Result().setData( userDto );
         }
         return new Result(ErrorCode.WRONG_PHONE_OR_PWD );

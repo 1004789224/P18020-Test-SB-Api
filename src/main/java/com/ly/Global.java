@@ -23,7 +23,7 @@ public class Global {
     public static String VERIFY_BANK_ACCOUNT = "/bank_account_data_requests";
 
     public static String VERIFY_PAYMENTS = "/callback_virtual_account_payments/payment_id=";
-    public static final String USER_ID = "USER_ID";
+    public static final String USER_ID = "userId";
 
 
     public static final String P2P_USER_ID = "P2P_USER_ID_";

@@ -2,6 +2,7 @@ package com.ly.service;
 
 import com.ly.domain.User;
 import com.ly.dto.UserDto;
+import com.ly.helper.AppException;
 import com.ly.helper.MyPage;
 import com.ly.util.ImageHolder;
 import com.ly.vo.form.ModifyUserVo;
@@ -34,7 +35,7 @@ public interface UserService {
 
     List<UserDto> listUser();
 
-    Long modifyPassword(ModifyUserVo userVo);
+    Long modifyPassword(ModifyUserVo userVo) ;
     /**
      * 初始注册时,user只有phone和密码
      * @param registerVo
