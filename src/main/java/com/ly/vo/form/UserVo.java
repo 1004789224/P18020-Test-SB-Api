@@ -22,9 +22,7 @@ public class UserVo {
     private String name;
     @NotBlank(message = "密码不能为空")
     private String password;
-
     private String imgUrl;
-
     public Long getId() {
         return id;
     }
