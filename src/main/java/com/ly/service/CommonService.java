@@ -3,6 +3,7 @@ package com.ly.service;
 import com.ly.domain.Common;
 import com.ly.dto.CommonDto;
 import com.ly.helper.MyPage;
+import com.ly.model.InstrumentM;
 import com.ly.vo.query.CommonQueryVo;
 import com.ly.vo.form.CommonVo;
 import java.util.List;
@@ -24,4 +25,11 @@ public interface CommonService {
 
     List<CommonDto> listCommon();
 
+    /**
+     * 根据名称 获取通用台账里的仪器分类、仪器状态和仪器服务方式
+     * @param code 即InstrumentM中的InstrumentM.GROUP_ID SERVICE_METHOD_ID CATEGROY_ID
+     * @return
+     */
+
+    List<CommonDto> getCommonList(String code);
 }

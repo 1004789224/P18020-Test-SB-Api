@@ -20,6 +20,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -66,6 +67,20 @@ public class CommonServiceImpl implements CommonService {
         return getListDto(commonRepository.findAll(page).getContent());
     }
 
+    /**
+     * 根据名称 获取通用台账里的仪器分类、仪器状态和仪器服务方式
+     *
+     * @param code 即InstrumentM中的InstrumentM.GROUP_ID SERVICE_METHOD_ID CATEGROY_ID
+     * @return
+     */
+    @Override
+    public List<CommonDto> getCommonList(String code) {
+        List<Common> commonsByName = commonRepository
+                .findCommonsByCodeAndIsDeleted( code,0L );
+        List<CommonDto> listDto = getListDto( commonsByName );
+        return listDto;
+    }
+
     @Override
     public CommonVo findCommon(Long id) {
         Common common = commonRepository.findById(id).orElse(null);
@@ -94,6 +109,7 @@ public class CommonServiceImpl implements CommonService {
             return 0L;
         }
         BeanUtils.copyProperties(commonVo, common);
+        common.setGmtModified( new Date() );
         return commonRepository.save(common) == null ? 0L : 1L;
     }
 
@@ -102,6 +118,7 @@ public class CommonServiceImpl implements CommonService {
         Common common = commonRepository.findById(id).orElse(null);
         if (common != null) {
             common.setIsDeleted( 1L );
+            common.setGmtModified( new Date() );
         }
         return commonRepository.save(common) == null ? 0L : 1L;
     }

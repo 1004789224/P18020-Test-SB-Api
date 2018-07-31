@@ -2,6 +2,7 @@ package com.ly.web;
 
 import com.ly.anon.AopLog;
 import com.ly.domain.Instrument;
+import com.ly.dto.InstrumentDto;
 import com.ly.helper.ErrorCode;
 import com.ly.helper.Result;
 import com.ly.helper.ResultHelper;
@@ -39,8 +40,8 @@ public class InstrumentController {
     @AopLog
     @RequestMapping(value = "/get", method = RequestMethod.POST)
     public Result get(@RequestBody @Valid IdReqVo idReqVo, BindingResult bindingResult) {
-        InstrumentVo rspVo = instrumentService.findInstrument(idReqVo.getIid());
-        return rspVo == null ? new Result(ErrorCode.PARAMETER_ERROR) : new Result().setData(rspVo);
+        InstrumentDto dto = instrumentService.findInstrument( idReqVo.getIid() );
+        return dto == null ? new Result(ErrorCode.PARAMETER_ERROR) : new Result().setData(dto);
     }
 
     @AopLog

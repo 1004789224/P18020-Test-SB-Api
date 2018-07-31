@@ -2,6 +2,7 @@ package com.ly.web;
 
 import com.ly.anon.AopLog;
 import com.ly.domain.Common;
+import com.ly.enums.CommonCode;
 import com.ly.helper.ErrorCode;
 import com.ly.helper.Result;
 import com.ly.helper.ResultHelper;
@@ -60,5 +61,25 @@ public class CommonController {
     public Result del(@RequestBody @Valid IdReqVo idReqVo, BindingResult bindingResult) {
         long isOk = commonService.del(idReqVo.getIid());
         return ResultHelper.delResult(isOk);
+    }
+
+    @AopLog
+    @PostMapping("getinstrumentcategories")
+    public Result getInstrumentCategories() {
+        return new Result(  )
+                .setData( commonService.getCommonList( CommonCode.CATEGOTY.name() ) );
+    }
+    @AopLog
+    @PostMapping("getinstrumentservicemethod")
+    public Result getInstrumentServiceMethod() {
+        return new Result(  )
+                .setData( commonService.getCommonList( CommonCode.SERVICE_METHOD.name() ) );
+    }
+
+    @AopLog
+    @PostMapping("getinstrumentstate")
+    public Result getInstrumentState() {
+        return new Result()
+                .setData( commonService.getCommonList( CommonCode.STATE.name() ) );
     }
 }

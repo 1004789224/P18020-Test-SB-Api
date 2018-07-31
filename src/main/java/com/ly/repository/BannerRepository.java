@@ -16,4 +16,6 @@ import java.util.List;
 public interface BannerRepository extends PagingAndSortingRepository<Banner, Long>,
         JpaSpecificationExecutor<Banner>, 
         QuerydslPredicateExecutor<Banner> {
+
+    List<Banner> getByIsDeleted(Long isDeleted);
 }

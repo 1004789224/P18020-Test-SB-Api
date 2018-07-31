@@ -47,5 +47,7 @@ public class InstrumentM {
     public static final String IS_DELETED = "isDeleted";
 
     public static final String STATE = "state";
-    
+
+
+
 }

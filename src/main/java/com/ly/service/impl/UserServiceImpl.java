@@ -79,12 +79,13 @@ public class UserServiceImpl implements UserService {
     public Long del(Long id) {
         User user = userRepository.findById( id ).orElse( null );
         if (user != null) {
-            user.setIsDeleted( 1L );
             if (user.getImgUrl() != null) {
                 ImageUtil.deleteFileOrPath( user.getImgUrl() );
                 //TODO 设置为本地默认图片
                 user.setImgUrl( " " );
             }
+            user.setIsDeleted( 1L );
+            user.setGmtModified( new Date() );
         }
         return userRepository.save( user ) == null ? 0L : 1L;
     }
@@ -157,15 +158,11 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public UserDto login(UserVo userVo) throws AppException {
-        String phone = userVo.getPhone();
-        User byPhone = userRepository.getUserByPhone( phone );
+        User byPhone = userRepository.getUserByPhone( userVo.getPhone() );
         if (byPhone == null) {
             throw new AppException(ErrorCode.WRONG_USER);
         }
         BooleanBuilder where = new BooleanBuilder();
-        if (userVo.getPassword() == null || userVo.getPhone() == null) {
-            return null;
-        }
         where.and( QUser.user.phone.eq( userVo.getPhone() ) );
         where.and( QUser.user.password.eq(
                 MD5Util.getMD5String( userVo.getPassword()
@@ -192,7 +189,7 @@ public class UserServiceImpl implements UserService {
     public UserDto updateUser(UserUpdateVo updateVo) {
 
         User user = userRepository.findById( updateVo.getId() ).orElse( null );
-        if (user == null) {
+        if (user == null||user.getIsDeleted()==1L) {
             return null;
         }
         //当前用户修改图片  即数据库中本来有图片,用户仍然上传了图片,则删除本地原来的图片
@@ -224,7 +221,7 @@ public class UserServiceImpl implements UserService {
     public UserVo findUser(Long id) {
         User user = userRepository.findById( id ).orElse( null );
         UserVo userVo = new UserVo();
-        if (user != null) {
+        if (user != null&&user.getIsDeleted()!=1L) {
             BeanUtils.copyProperties( user, userVo );
             return userVo;
         }

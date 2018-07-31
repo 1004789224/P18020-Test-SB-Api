@@ -13,9 +13,9 @@ public class InstrumentDto {
 
     private Long id;
 
-    private Long categroyId;
+    private String  category;
 
-    private Long serviceMethodId;
+    private String  serviceMethod;
 
     private String code;
 
@@ -62,20 +62,20 @@ public class InstrumentDto {
         this.id = id;
     }
 
-    public Long getCategroyId() {
-        return categroyId;
+    public String getCategory() {
+        return category;
     }
 
-    public void setCategroyId(Long categroyId) {
-        this.categroyId = categroyId;
+    public void setCategory(String category) {
+        this.category = category;
     }
 
-    public Long getServiceMethodId() {
-        return serviceMethodId;
+    public String getServiceMethod() {
+        return serviceMethod;
     }
 
-    public void setServiceMethodId(Long serviceMethodId) {
-        this.serviceMethodId = serviceMethodId;
+    public void setServiceMethod(String serviceMethod) {
+        this.serviceMethod = serviceMethod;
     }
 
     public String getCode() {

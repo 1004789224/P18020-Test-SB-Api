@@ -38,7 +38,6 @@ public class LogOperateAop {
     @Before("webLog()")
     public void doBefore(JoinPoint joinPoint) throws AppException {
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
-
         Method method = methodSignature.getMethod();
         signature = joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName();
         // 判断是否打印全部log

@@ -12,10 +12,16 @@ package com.ly.enums;
  */
 public enum InstrumentCategory {
 
-    //仪器分类
-    IC01,
-    //仪器分类
-    IC02,
-    //仪器分类
-    IC03;
+    /**
+     * 计算和数据分析
+     */
+    CALCULATION_AND_DATA_ANALYSIS,
+    /**
+     * 工艺实验设备
+     */
+    PROCESS_EQUIPMENT,
+    /**
+     * 大科学装置
+     */
+    LARGE_SCIENTIFIC_DEVICE;
 }

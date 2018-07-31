@@ -178,7 +178,9 @@ public enum ErrorCode {
     UPDATE_ERROR( "100119", "更新用户信息失败" ),
     SAME_PASSWORD( "100120", "重复的密码!" ),
     INNER_WRONG( "100121", "内部错误!" ),
-    WRONG_USER( "100122", "用户未注册!" )
+    WRONG_USER( "100122", "用户未注册!" ),
+    NULL_PASSWORD("100123","密码不能为空!"),
+    ERROR_STATE_CODE( "100124", "错误的仪器状态码" )
     ;
 
 

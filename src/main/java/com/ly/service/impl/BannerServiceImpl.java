@@ -48,7 +48,7 @@ public class BannerServiceImpl implements BannerService {
 
     @Override
     public List<BannerDto> listBanner() {
-        return null;//getListDto(bannerRepository.getByIsDeleted(0L));
+        return getListDto(bannerRepository.getByIsDeleted(0L));
     }
 
     @Override
