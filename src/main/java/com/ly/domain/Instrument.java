@@ -25,37 +25,67 @@ public class Instrument implements java.io.Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    /**
+     * 分类标签
+     */
     private Long categroyId;
-
+    /**
+     *服务方式
+     */
     private Long serviceMethodId;
-
+    /**
+     *编码
+     */
     private String code;
 
     private String name;
-
+    /**
+     *型号
+     */
     private String modelNum;
-
+    /**
+     *所属单位
+     */
     private Long groupId;
-
+    /**
+     * 放置地点
+     */
     private String place;
-
+    /**
+     * 产地
+     */
     private String origin;
-
+    /**
+     * 厂家
+     */
     private String vender;
-
+    /**
+     * 生产日期
+     */
     private Date productionDate;
-
+    /**
+     * 购置日期
+     */
     private Date acquisitionDate;
-
+    /**
+     * 技术指标
+     */
     private String technicalIndex;
-
+    /**
+     * 技术团队
+     */
     private String technicalTeam;
-
+    /**
+     * 功能特点
+     */
     private String features;
-
+    /**
+     *仪器照片
+     */
     private String imgUrl;
-
+    /**
+     *排序
+     */
     private Long oredernum;
 
     private Date gmtCreate;
@@ -64,6 +94,15 @@ public class Instrument implements java.io.Serializable{
 
     private Long isDeleted;
 
+    private String state;
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
 
     public Long getId() {
         return id;

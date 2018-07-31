@@ -45,5 +45,7 @@ public class InstrumentM {
     public static final String GMT_MODIFIED = "gmtModified";
     
     public static final String IS_DELETED = "isDeleted";
+
+    public static final String STATE = "state";
     
 }

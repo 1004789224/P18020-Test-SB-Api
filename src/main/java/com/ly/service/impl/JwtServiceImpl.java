@@ -1,8 +1,11 @@
 package com.ly.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.ly.domain.User;
+import com.ly.dto.UserDto;
 import com.ly.service.JwtService;
 import com.ly.util.JwtUtil;
+import com.ly.vo.rsp.UserJwtToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -42,5 +45,16 @@ public class JwtServiceImpl implements JwtService {
             }
         }
         return null;
+    }
+
+    @Override
+    public Long getUserIdFromToken(String token) {
+        UserDto tokenObject = null;
+        try {
+             tokenObject = (UserDto) jwtUtil.getOneObjectFromJsonSrt( token, UserDto.class );
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return tokenObject == null ? null : tokenObject.getId();
     }
 }

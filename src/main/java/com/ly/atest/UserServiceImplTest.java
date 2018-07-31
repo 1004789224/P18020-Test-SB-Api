@@ -1,6 +1,7 @@
 package com.ly.atest;
 
 import com.ly.domain.User;
+import com.ly.helper.AppException;
 import com.ly.service.FileService;
 import com.ly.service.UserService;
 import com.ly.util.ImageHolder;
@@ -81,7 +82,7 @@ public class UserServiceImplTest extends MyTest {
     }
 
     @Test
-    public void testLogin() {
+    public void testLogin() throws AppException {
         UserVo userVo = new UserVo();
         userVo.setPassword( "123456" );
         userVo.setPhone(  "13685259636");

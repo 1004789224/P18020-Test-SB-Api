@@ -12,4 +12,6 @@ public interface JwtService {
     String  getTokenStr(Object object);
 
     Object getOneObject(String jsonStr,Class clz);
+
+    Long getUserIdFromToken(String token);
 }

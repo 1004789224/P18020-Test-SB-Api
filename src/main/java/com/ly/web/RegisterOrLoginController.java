@@ -3,6 +3,7 @@ package com.ly.web;
 import com.ly.Global;
 import com.ly.anon.AopLog;
 import com.ly.dto.UserDto;
+import com.ly.helper.AppException;
 import com.ly.helper.ErrorCode;
 import com.ly.helper.Result;
 import com.ly.helper.ResultHelper;
@@ -48,14 +49,11 @@ public class RegisterOrLoginController {
                            BindingResult bindingResult,
                            String vrifyCode) {
         if (!VerificationUtil.VerificationCode( req, vrifyCode )) {
-            return ResultHelper.VerificationHelp();
+            return new Result( ErrorCode.CODE_IS_ERROR );
         }
         UserDto userDto = userService.saveUser( registerVo );
         if (userDto != null) {
-            UserJwtToken userJwtToken = new UserJwtToken();
-            BeanUtils.copyProperties( userDto, userJwtToken );
-            String tokenStr = jwtService.getTokenStr( userJwtToken );
-            res.setHeader( Global.TOKEN, tokenStr );
+            res.setHeader( Global.TOKEN,  jwtService.getTokenStr( userDto ) );
             return new Result().setData( userDto );
         }
         return new Result(ErrorCode.INNER_WRONG);
@@ -73,13 +71,12 @@ public class RegisterOrLoginController {
 
     @PostMapping("login")
     @AopLog
-    public Result login(HttpServletResponse res, @RequestBody @Valid UserVo userVo, BindingResult bindingResult) {
+    public Result login(HttpServletResponse res,
+                        @RequestBody @Valid UserVo userVo,
+                        BindingResult bindingResult) throws AppException {
         UserDto userDto = userService.login( userVo );
         if (userDto != null) {
-            UserJwtToken userJwtToken = new UserJwtToken();
-            BeanUtils.copyProperties( userDto, userJwtToken );
-            String tokenStr = jwtService.getTokenStr( userJwtToken );
-            res.setHeader( Global.TOKEN, tokenStr );
+            res.setHeader( Global.TOKEN, jwtService.getTokenStr( userDto ) );
             return new Result().setData( userDto );
         }
         return new Result(ErrorCode.WRONG_PHONE_OR_PWD );

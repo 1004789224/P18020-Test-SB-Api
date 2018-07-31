@@ -3,10 +3,12 @@ package com.ly.service.impl;
 import com.ly.domain.QInstrument;
 import com.ly.domain.Instrument;
 import com.ly.dto.InstrumentDto;
+import com.ly.enums.InstrumentStateEnum;
 import com.ly.helper.MyPage;
 import com.ly.model.InstrumentM;
 import com.ly.repository.InstrumentRepository;
 import com.ly.service.InstrumentService;
+import com.ly.util.ImageUtil;
 import com.ly.vo.query.InstrumentQueryVo;
 import com.ly.vo.form.InstrumentVo;
 import com.querydsl.core.BooleanBuilder;
@@ -29,6 +31,7 @@ public class InstrumentServiceImpl implements InstrumentService {
 
     @Autowired
     private InstrumentRepository instrumentRepository;
+
     
     @Override
     public MyPage<InstrumentDto> listPage(InstrumentQueryVo instrumentQueryVo) {
@@ -55,8 +58,10 @@ public class InstrumentServiceImpl implements InstrumentService {
         if (instrumentQueryVo.getGroupId() != null && instrumentQueryVo.getGroupId() > 0 ) {
             where.and(QInstrument.instrument.groupId.eq(instrumentQueryVo.getGroupId().longValue()));
         }
-
-        Sort sort = new Sort(Sort.Direction.ASC, InstrumentM.ID);
+        if (StringUtils.hasText( instrumentQueryVo.getState() )) {
+            where.and( QInstrument.instrument.state.eq( instrumentQueryVo.getState() ) );
+        }
+        Sort sort = new Sort(Sort.Direction.ASC, InstrumentM.OREDERNUM);
         Pageable page = PageRequest.of(instrumentQueryVo.getNumber(), instrumentQueryVo.getSize(), sort);
         Page<Instrument> componentPage = instrumentRepository.findAll(where, page);
         return getPageDto(componentPage);
@@ -66,6 +71,21 @@ public class InstrumentServiceImpl implements InstrumentService {
     public List<InstrumentDto> listInstrument() {
 
         return null;//getListDto(instrumentRepository.getByIsDeleted(0L));
+    }
+
+    @Override
+    public Long updateInstrumentState(Long id,InstrumentStateEnum state) {
+        Instrument instrument = instrumentRepository.findById( id ).orElse( null );
+        if (instrument != null) {
+            instrument.setOredernum( instrument.getOredernum() + 1 );
+            if (state != null) {
+                instrument.setState( state.name() );
+            } else {
+                return 0L;
+            }
+            return instrumentRepository.save(instrument) == null ? 0L : 1L;
+        }
+        return 0L;
     }
 
     @Override
@@ -99,9 +119,23 @@ public class InstrumentServiceImpl implements InstrumentService {
         return instrumentRepository.save(instrument) == null ? 0L : 1L;
     }
 
+    /**
+     * 根据id删除指定仪器 软删除 但删除磁盘中的仪器图片
+     * @param id
+     * @return
+     */
     @Override
     public Long del(Long id) {
         Instrument instrument = instrumentRepository.findById(id).orElse(null);
+        if (instrument != null) {
+            if (instrument.getImgUrl() != null) {
+                ImageUtil.deleteFileOrPath( instrument.getImgUrl() );
+                instrument.setImgUrl( " " );
+            }
+            instrument.setIsDeleted( 1L );
+        } else {
+            return 0L;
+        }
         return instrumentRepository.save(instrument) == null ? 0L : 1L;
     }
 

@@ -46,45 +46,34 @@ public class UserController {
 
     @AopLog
     @RequestMapping(value = "/del", method = RequestMethod.POST)
-    public Result del(@RequestBody @Valid IdReqVo idReqVo, BindingResult bindingResult) {
-        long isOk = userService.del( idReqVo.getIid() );
+    public Result del(
+            @RequestAttribute Long userId,
+            @RequestBody @Valid IdReqVo idReqVo, BindingResult bindingResult) {
+        long isOk = userService.del( userId );
         return ResultHelper.delResult( isOk );
     }
 
 
     @PostMapping("updateuser")
     @AopLog
-    public Result updeteUser(HttpServletRequest request,
-                             HttpServletResponse res,
+    public Result updeteUser(@RequestAttribute Long userId,
                              @RequestBody @Valid UserUpdateVo updateVo,
                              BindingResult bindingResult
     ) {
-        String token = request.getHeader( Global.TOKEN );
-        UserJwtToken userJwtToken = (UserJwtToken) jwtService.getOneObject( token, UserJwtToken.class );
-        if (null == userJwtToken || userJwtToken.getId() == null || userJwtToken.getId() > 0) {
-            return new Result(ErrorCode.SESSION_EXPIRE);
-        }
-        updateVo.setId( userJwtToken.getId() );
+        updateVo.setId( userId );
         UserDto userDto = userService.updateUser( updateVo );
-        UserJwtToken newToken = new UserJwtToken();
-        BeanUtils.copyProperties( userDto, newToken );
-        String tokenStr = jwtService.getTokenStr( newToken );
-        res.setHeader( Global.TOKEN, tokenStr );
         return new Result().setData( userDto );
     }
 
     @PostMapping("modifypwd")
     @AopLog
-    public Result modifyPassword(HttpServletRequest request, @RequestBody @Valid ModifyUserVo userVo, BindingResult bindingResult) {
+    public Result modifyPassword(@RequestAttribute Long userId,
+                                 @RequestBody @Valid ModifyUserVo userVo,
+                                 BindingResult bindingResult) {
         if (userVo.getNewPassword().equals( userVo.getOldPassword() )) {
             return new Result( ErrorCode.SAME_PASSWORD );
         }
-        String token = request.getHeader( Global.TOKEN );
-        UserJwtToken userJwtToken = (UserJwtToken) jwtService.getOneObject( token, UserJwtToken.class );
-        if (null == userJwtToken || userJwtToken.getId() == null || userJwtToken.getId() <= 0) {
-            return new Result(ErrorCode.SESSION_EXPIRE);
-        }
-        userVo.setId( userJwtToken.getId() );
+        userVo.setId( userId );
         final Long isOk = userService.modifyPassword( userVo );
         return ResultHelper.saveResult( isOk );
     }
