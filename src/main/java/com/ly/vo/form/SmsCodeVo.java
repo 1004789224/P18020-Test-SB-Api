@@ -2,7 +2,11 @@ package com.ly.vo.form;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.hibernate.validator.constraints.Range;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.util.Date;
 
 /**
@@ -14,11 +18,12 @@ public class SmsCodeVo {
     private Long id;
 
     private Long userId;
-
+    @Pattern(regexp = "^1(3|4|5|7|8)\\d{9}$", message = "手机号码格式错误")
+    @NotBlank(message = "手机号码不能为空")
     private String phone;
-
+    @NotNull(message = "短信验证码不能为空")
+    @Range(min = 0L, max = 9999L,message = "验证码错误")
     private Long code;
-
     private Long isUsed;
 
     public Long getId() {
@@ -63,6 +68,6 @@ public class SmsCodeVo {
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+        return ToStringBuilder.reflectionToString( this, ToStringStyle.SHORT_PREFIX_STYLE );
     }
 }
