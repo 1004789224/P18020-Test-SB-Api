@@ -29,6 +29,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.Date;
@@ -44,10 +45,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     JwtService jwtService;
     @Override
+    @Transactional(readOnly = true)
     public MyPage<UserDto> listPage(UserQueryVo userQueryVo) {
         BooleanBuilder where = new BooleanBuilder();
-
-
         if (StringUtils.hasText( userQueryVo.getPhone() )) {
             where.and( QUser.user.phone.like( Expressions.asString( "%" ).concat( userQueryVo.getPhone() ).concat( "%" ) ) );
         }
@@ -56,13 +56,9 @@ public class UserServiceImpl implements UserService {
         if (StringUtils.hasText( userQueryVo.getIdnumber() )) {
             where.and( QUser.user.idnumber.like( Expressions.asString( "%" ).concat( userQueryVo.getIdnumber() ).concat( "%" ) ) );
         }
-
-
         if (StringUtils.hasText( userQueryVo.getName() )) {
             where.and( QUser.user.name.like( Expressions.asString( "%" ).concat( userQueryVo.getName() ).concat( "%" ) ) );
         }
-
-
         Sort sort = new Sort( Sort.Direction.ASC, UserM.ID );
         Pageable page = PageRequest.of( userQueryVo.getNumber(), userQueryVo.getSize(), sort );
         Page<User> componentPage = userRepository.findAll( where, page );
@@ -76,6 +72,7 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     @Override
+    @Transactional
     public Long del(Long id) {
         User user = userRepository.findById( id ).orElse( null );
         if (user != null) {
@@ -96,6 +93,7 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     @Override
+    @Transactional
     public Long modifyPassword(ModifyUserVo userVo)  {
         User user = userRepository.findById( userVo.getId() ).orElse( null );
         String salt;
@@ -130,6 +128,7 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     @Override
+    @Transactional
     public UserDto saveUser(UserRegisterVo registerVo) {
         if (null == registerVo) {
             return null;
@@ -157,6 +156,7 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     @Override
+    @Transactional(readOnly = true)
     public UserDto login(UserVo userVo) throws AppException {
         User byPhone = userRepository.getUserByPhone( userVo.getPhone() );
         if (byPhone == null) {
@@ -186,6 +186,7 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     @Override
+    @Transactional
     public UserDto updateUser(UserUpdateVo updateVo) {
 
         User user = userRepository.findById( updateVo.getId() ).orElse( null );
@@ -218,6 +219,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public UserVo findUser(Long id) {
         User user = userRepository.findById( id ).orElse( null );
         UserVo userVo = new UserVo();
@@ -233,6 +235,7 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     @Override
+    @Transactional
     public Long saveUser(UserVo userVo) {
         User user = new User();
         BeanUtils.copyProperties( userVo, user );

@@ -34,15 +34,16 @@ public class InstrumentQueryVo {
     private Long groupId;
 
 
-    private String state;
+    private Long stateId;
 
-    public String getState() {
-        return state;
+    public Long getStateId() {
+        return stateId;
     }
 
-    public void setState(String state) {
-        this.state = state;
+    public void setStateId(Long stateId) {
+        this.stateId = stateId;
     }
+
     public Integer getNumber() {
         return number;
     }

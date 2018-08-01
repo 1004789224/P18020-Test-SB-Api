@@ -32,4 +32,6 @@ public interface CommonService {
      */
 
     List<CommonDto> getCommonList(String code);
+
+    CommonVo findByName(String name);
 }

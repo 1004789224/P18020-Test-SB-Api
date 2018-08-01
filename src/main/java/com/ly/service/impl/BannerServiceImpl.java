@@ -18,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.Date;
@@ -31,6 +32,7 @@ public class BannerServiceImpl implements BannerService {
     private BannerRepository bannerRepository;
     
     @Override
+    @Transactional(readOnly = true)
     public MyPage<BannerDto> listPage(BannerQueryVo bannerQueryVo) {
         BooleanBuilder where = new BooleanBuilder();
 
@@ -47,6 +49,7 @@ public class BannerServiceImpl implements BannerService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<BannerDto> listBanner() {
         return getListDto(bannerRepository.getByIsDeleted(0L));
     }
@@ -63,6 +66,7 @@ public class BannerServiceImpl implements BannerService {
     }
 
     @Override
+    @Transactional
     public Long saveBanner(BannerVo bannerVo) {
         Banner banner = new Banner();
         BeanUtils.copyProperties(bannerVo, banner);        
@@ -73,6 +77,7 @@ public class BannerServiceImpl implements BannerService {
     }
 
     @Override
+    @Transactional
     public Long updateBanner(BannerVo bannerVo) {
         Banner banner = bannerRepository.findById(bannerVo.getId()).orElse(null);
         if (banner == null) {
@@ -83,6 +88,7 @@ public class BannerServiceImpl implements BannerService {
     }
 
     @Override
+    @Transactional
     public Long del(Long id) {
         Banner banner = bannerRepository.findById(id).orElse(null);
         return bannerRepository.save(banner) == null ? 0L : 1L;

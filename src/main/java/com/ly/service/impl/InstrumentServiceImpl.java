@@ -1,10 +1,9 @@
 package com.ly.service.impl;
 
 import com.ly.domain.Common;
-import com.ly.domain.QInstrument;
 import com.ly.domain.Instrument;
+import com.ly.domain.QInstrument;
 import com.ly.dto.InstrumentDto;
-import com.ly.enums.CommonCode;
 import com.ly.enums.InstrumentStateEnum;
 import com.ly.helper.MyPage;
 import com.ly.model.InstrumentM;
@@ -13,8 +12,8 @@ import com.ly.service.CommonService;
 import com.ly.service.InstrumentService;
 import com.ly.util.ImageUtil;
 import com.ly.vo.form.CommonVo;
-import com.ly.vo.query.InstrumentQueryVo;
 import com.ly.vo.form.InstrumentVo;
+import com.ly.vo.query.InstrumentQueryVo;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.Expressions;
 import org.springframework.beans.BeanUtils;
@@ -24,6 +23,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.Date;
@@ -39,6 +39,7 @@ public class InstrumentServiceImpl implements InstrumentService {
     private CommonService commonService;
 
     @Override
+    @Transactional(readOnly = true)
     public MyPage<InstrumentDto> listPage(InstrumentQueryVo instrumentQueryVo) {
         BooleanBuilder where = new BooleanBuilder();
         if (instrumentQueryVo.getCategroyId() != null && instrumentQueryVo.getCategroyId() > 0) {
@@ -61,8 +62,8 @@ public class InstrumentServiceImpl implements InstrumentService {
         if (instrumentQueryVo.getGroupId() != null && instrumentQueryVo.getGroupId() > 0) {
             where.and( QInstrument.instrument.groupId.eq( instrumentQueryVo.getGroupId().longValue() ) );
         }
-        if (StringUtils.hasText( instrumentQueryVo.getState() )) {
-            where.and( QInstrument.instrument.state.eq( instrumentQueryVo.getState() ) );
+        if (instrumentQueryVo.getStateId()!=null&&instrumentQueryVo.getStateId()>0) {
+            where.and( QInstrument.instrument.stateId.eq( instrumentQueryVo.getStateId() ) );
         }
         where.and( QInstrument.instrument.isDeleted.eq( 0L ) );
         Sort sort = new Sort( Sort.Direction.DESC, InstrumentM.OREDERNUM );
@@ -78,14 +79,21 @@ public class InstrumentServiceImpl implements InstrumentService {
     }
 
     @Override
-    public Long updateInstrumentState(Long id, CommonVo state) {
+    @Transactional
+    public Long updateInstrumentState(Long id, String  stateName) {
+        CommonVo state = commonService.findByName( stateName );
         Instrument instrument = instrumentRepository.findById( id ).orElse( null );
         if (instrument != null) {
-            if (state != null&&state.getValue()!=null) {
-                if ("USED".equals( state.getValue() )) {
+            if (state != null&&state.getName()!=null) {
+                if (InstrumentStateEnum.USED.name().equals( state.getName() )) {
                     instrument.setOredernum( instrument.getOredernum() + 1 );
                 }
-                instrument.setState( state.getName() );
+                if (InstrumentStateEnum.UNSELESS.name()
+                        .equals( state.getName() ) ||
+                        InstrumentStateEnum.UNSELESS.name().equals( state.getName() )) {
+                    return 0L;
+                }
+                instrument.setStateId( state.getId() );
             } else {
                 return 0L;
             }
@@ -95,6 +103,7 @@ public class InstrumentServiceImpl implements InstrumentService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public InstrumentDto findInstrument(Long id) {
         Instrument instrument = instrumentRepository.findById( id ).orElse( null );
         InstrumentDto instrumentDto = new InstrumentDto();
@@ -107,6 +116,7 @@ public class InstrumentServiceImpl implements InstrumentService {
     }
 
     @Override
+    @Transactional
     public Long saveInstrument(InstrumentVo instrumentVo) {
         Instrument instrument = new Instrument();
         BeanUtils.copyProperties( instrumentVo, instrument );
@@ -117,6 +127,7 @@ public class InstrumentServiceImpl implements InstrumentService {
     }
 
     @Override
+    @Transactional
     public Long updateInstrument(InstrumentVo instrumentVo) {
         Instrument instrument = instrumentRepository.findById( instrumentVo.getId() ).orElse( null );
         if (instrument == null) {
@@ -134,6 +145,7 @@ public class InstrumentServiceImpl implements InstrumentService {
      * @return
      */
     @Override
+    @Transactional
     public Long del(Long id) {
         Instrument instrument = instrumentRepository.findById( id ).orElse( null );
         if (instrument != null) {
@@ -178,12 +190,16 @@ public class InstrumentServiceImpl implements InstrumentService {
             ,InstrumentDto instrumentDto) {
         if (instrument.getCategroyId() != null && instrument.getCategroyId() > 0) {
             CommonVo category = commonService.findCommon( instrument.getCategroyId() );
-            instrumentDto.setCategory( category.getName() );
+            instrumentDto.setCategory( category.getValue() );
         }
         if (instrument.getServiceMethodId() != null && instrument.getServiceMethodId() > 0) {
             CommonVo serviceMethod = commonService
                     .findCommon( instrument.getServiceMethodId() );
-            instrumentDto.setServiceMethod( serviceMethod.getName() );
+            instrumentDto.setServiceMethod( serviceMethod.getValue() );
+        }
+        if (instrument.getStateId() != null && instrument.getStateId() > 0) {
+            CommonVo state = commonService.findCommon( instrument.getStateId() );
+            instrumentDto.setState( state.getValue() );
         }
         return instrumentDto;
     }

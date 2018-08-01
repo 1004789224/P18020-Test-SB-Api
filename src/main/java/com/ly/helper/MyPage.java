@@ -1,5 +1,8 @@
 package com.ly.helper;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import java.util.List;
 
 public class MyPage<T> {
@@ -24,5 +27,10 @@ public class MyPage<T> {
 
     public void setTotalElements(long totalElements) {
         this.totalElements = totalElements;
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString( this,ToStringStyle.SHORT_PREFIX_STYLE );
     }
 }

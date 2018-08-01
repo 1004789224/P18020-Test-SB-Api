@@ -18,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.Date;
@@ -31,6 +32,7 @@ public class GroupServiceImpl implements GroupService {
     private GroupRepository groupRepository;
     
     @Override
+    @Transactional(readOnly = true)
     public MyPage<GroupDto> listPage(GroupQueryVo groupQueryVo) {
         BooleanBuilder where = new BooleanBuilder();
 
@@ -61,6 +63,7 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public GroupVo findGroup(Long id) {
         Group group = groupRepository.findById(id).orElse(null);
         GroupVo groupVo = new GroupVo();
@@ -72,6 +75,7 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
+    @Transactional
     public Long saveGroup(GroupVo groupVo) {
         Group group = new Group();
         BeanUtils.copyProperties(groupVo, group);        
@@ -82,6 +86,7 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
+    @Transactional
     public Long updateGroup(GroupVo groupVo) {
         Group group = groupRepository.findById(groupVo.getId()).orElse(null);
         if (group == null) {
@@ -92,6 +97,7 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
+    @Transactional
     public Long del(Long id) {
         Group group = groupRepository.findById(id).orElse(null);
         return groupRepository.save(group) == null ? 0L : 1L;

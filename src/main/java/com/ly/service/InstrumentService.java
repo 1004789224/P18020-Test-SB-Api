@@ -8,7 +8,6 @@ import com.ly.helper.MyPage;
 import com.ly.vo.form.CommonVo;
 import com.ly.vo.query.InstrumentQueryVo;
 import com.ly.vo.form.InstrumentVo;
-import com.sun.xml.internal.bind.v2.TODO;
 
 import java.util.List;
 /**
@@ -32,7 +31,7 @@ public interface InstrumentService {
 
     List<InstrumentDto> listInstrument();
 
-    Long updateInstrumentState(Long id,CommonVo state);
+    Long updateInstrumentState(Long id,String  stateName);
 
 
 }

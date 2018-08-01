@@ -18,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ public class CommonServiceImpl implements CommonService {
     private CommonRepository commonRepository;
     
     @Override
+    @Transactional(readOnly = true)
     public MyPage<CommonDto> listPage(CommonQueryVo commonQueryVo) {
         BooleanBuilder where = new BooleanBuilder();
 
@@ -55,7 +57,7 @@ public class CommonServiceImpl implements CommonService {
         }
 
 
-        Sort sort = new Sort(Sort.Direction.ASC, CommonM.ORDERNUM);
+        Sort sort = new Sort(Sort.Direction.DESC, CommonM.ORDERNUM);
         Pageable page = PageRequest.of(commonQueryVo.getNumber(), commonQueryVo.getSize(), sort);
         Page<Common> componentPage = commonRepository.findAll(where, page);
         return getPageDto(componentPage);
@@ -74,6 +76,7 @@ public class CommonServiceImpl implements CommonService {
      * @return
      */
     @Override
+    @Transactional(readOnly = true)
     public List<CommonDto> getCommonList(String code) {
         List<Common> commonsByName = commonRepository
                 .findCommonsByCodeAndIsDeleted( code,0L );
@@ -82,6 +85,18 @@ public class CommonServiceImpl implements CommonService {
     }
 
     @Override
+    public CommonVo findByName(String name) {
+        Common common = commonRepository.findCommonByName( name );
+        if (common != null) {
+            CommonVo commonVo = new CommonVo();
+            BeanUtils.copyProperties( common, commonVo );
+            return commonVo;
+        }
+        return null;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public CommonVo findCommon(Long id) {
         Common common = commonRepository.findById(id).orElse(null);
         CommonVo commonVo = new CommonVo();
@@ -93,6 +108,7 @@ public class CommonServiceImpl implements CommonService {
     }
 
     @Override
+    @Transactional
     public Long saveCommon(CommonVo commonVo) {
         Common common = new Common();
         BeanUtils.copyProperties(commonVo, common);        
@@ -103,6 +119,7 @@ public class CommonServiceImpl implements CommonService {
     }
 
     @Override
+    @Transactional
     public Long updateCommon(CommonVo commonVo) {
         Common common = commonRepository.findById(commonVo.getId()).orElse(null);
         if (common == null) {
@@ -114,6 +131,7 @@ public class CommonServiceImpl implements CommonService {
     }
 
     @Override
+    @Transactional
     public Long del(Long id) {
         Common common = commonRepository.findById(id).orElse(null);
         if (common != null) {

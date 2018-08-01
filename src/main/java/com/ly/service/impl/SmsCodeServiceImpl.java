@@ -18,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.Calendar;
@@ -34,6 +35,7 @@ public class SmsCodeServiceImpl implements SmsCodeService {
     private SmsCodeRepository smsCodeRepository;
     
     @Override
+    @Transactional(readOnly = true)
     public MyPage<SmsCodeDto> listPage(SmsCodeQueryVo smsCodeQueryVo) {
         BooleanBuilder where = new BooleanBuilder();
 
@@ -58,6 +60,7 @@ public class SmsCodeServiceImpl implements SmsCodeService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<SmsCodeDto> listSmsCode() {
         Sort sort = new Sort(Sort.Direction.ASC, SmsCodeM.ID);
         Pageable page = PageRequest.of(0, 200, sort);
@@ -72,6 +75,7 @@ public class SmsCodeServiceImpl implements SmsCodeService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public SmsCodeVo findSmsCode(Long id) {
         SmsCode smsCode = smsCodeRepository.findById(id).orElse(null);
         SmsCodeVo smsCodeVo = new SmsCodeVo();
@@ -83,6 +87,7 @@ public class SmsCodeServiceImpl implements SmsCodeService {
     }
 
     @Override
+    @Transactional
     public Long saveSmsCode(SmsCodeVo smsCodeVo) {
         SmsCode smsCode = new SmsCode();
         BeanUtils.copyProperties(smsCodeVo, smsCode);
@@ -94,6 +99,7 @@ public class SmsCodeServiceImpl implements SmsCodeService {
     }
 
     @Override
+    @Transactional
     public Long updateSmsCode(SmsCodeVo smsCodeVo) {
         SmsCode smsCode = smsCodeRepository.findById(smsCodeVo.getId()).orElse(null);
         if (smsCode == null) {
@@ -104,6 +110,7 @@ public class SmsCodeServiceImpl implements SmsCodeService {
     }
 
     @Override
+    @Transactional
     public Long del(Long id) {
         SmsCode smsCode = smsCodeRepository.findById(id).orElse(null);
         return smsCodeRepository.save(smsCode) == null ? 0L : 1L;
